@@ -3,7 +3,6 @@ const mongoose = {
   useUnifiedTopology: true,
 }
 
-
-module.exports = {
+export default {
   mongoose,
 }
