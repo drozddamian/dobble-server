@@ -5,13 +5,14 @@ import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import AppConfig from './config'
 import auth from './routes/auth'
+import player from './routes/player'
+import room from './routes/room'
 
 const app: Application = express()
 
 app.use(cors())
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
-
 
 mongoose.connect(process.env.MONGO_URI as string, AppConfig.mongoose)
   .then(() => console.log('Connection with database have been established'))
@@ -22,6 +23,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', auth)
+app.use('/api/player', player)
+app.use('/api/room', room)
 
 app.use((req, res, next) =>{
   res.status(500).end()

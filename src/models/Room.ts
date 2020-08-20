@@ -2,6 +2,7 @@ import mongoose, { Document } from 'mongoose'
 import Player from './Player'
 const Schema = mongoose.Schema
 import { IPlayer } from './Player'
+import { roomRemove } from './modelsMiddleware/roomChange'
 
 
 export interface IRoom extends Document {
@@ -10,7 +11,9 @@ export interface IRoom extends Document {
   players?: IPlayer[];
 }
 
-const PlayerSchema = new Schema({
+const ROOM_EXPIRATION_DATE = 3600 * 24 * 7
+
+const RoomSchema = new Schema({
   availableSeats: {
     type: Number,
     min: 2,
@@ -23,10 +26,17 @@ const PlayerSchema = new Schema({
   },
   players: [{
     type: Schema.Types.ObjectId,
-    ref: 'Room',
+    ref: 'Player',
   }],
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    expires: 3600,
+  },
 })
 
-const PlayerModel = mongoose.model<IRoom>('Player', PlayerSchema)
+RoomSchema.post('deleteOne', roomRemove)
 
-export default PlayerModel
+const RoomModel = mongoose.model<IRoom>('Room', RoomSchema)
+
+export default RoomModel

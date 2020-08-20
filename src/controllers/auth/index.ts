@@ -18,7 +18,8 @@ const authControllers = {
     }
 
     const token = jwt.sign({ _id: player?._id }, process.env.JWT_SECRET as Secret)
-    res.header('auth-token', token).send(token)
+    await res.header('auth-token', token)
+    res.send({ player, token })
   },
   auth_register: async (req, res) => {
     const { username, password } = req.body
@@ -32,7 +33,10 @@ const authControllers = {
     const salt = await bcrypt.genSalt()
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    const player = new Player({ username, password: hashedPassword })
+    const player = new Player({
+      username,
+      password: hashedPassword,
+    })
 
     try {
       const savedPlayer = await player.save()

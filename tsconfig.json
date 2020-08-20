@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "strict": true,
+    "strictNullChecks": false,
     "noImplicitAny": false,
     "outDir": "dist",
     "baseUrl": ".",
