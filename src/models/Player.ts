@@ -5,6 +5,7 @@ import { IRoom } from './Room'
 export interface IPlayer extends Document {
   username: string;
   password: string;
+  nick: string;
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
 }
@@ -22,6 +23,12 @@ const PlayerSchema = new Schema({
     required: true,
     minLength: 6,
     maxLength: 255,
+  },
+  nick: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 14,
   },
   owningRooms: [{
     type: Schema.Types.ObjectId,

@@ -10,11 +10,13 @@ const authControllers = {
     const player = await Player.findOne({ username })
     if (!player) {
       res.status(400).send('User not found')
+      return
     }
 
     const isValidPassword = await bcrypt.compare(password, player?.password)
     if (!isValidPassword) {
       res.status(400).send('Invalid password')
+      return
     }
 
     const token = jwt.sign({ _id: player?._id }, process.env.JWT_SECRET as Secret)
@@ -27,6 +29,7 @@ const authControllers = {
 
     if (playerExists) {
       res.status(409).send('Username already exists')
+      return
     }
 
     const salt = await bcrypt.genSalt()
@@ -34,6 +37,7 @@ const authControllers = {
 
     const player = new Player({
       username,
+      nickname: username,
       password: hashedPassword,
     })
 
