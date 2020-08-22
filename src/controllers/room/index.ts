@@ -51,9 +51,9 @@ const roomControllers = {
   remove_room: async (req, res) => {
     const { roomId } = req.params
 
-    const removeResponse = await Room.deleteOne({ _id: roomId })
+    const removeResponse = await Room.findByIdAndDelete(roomId)
     res.send({
-      removed: removeResponse.deletedCount,
+      removed: removeResponse,
     })
   }
 }

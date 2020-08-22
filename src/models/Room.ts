@@ -35,7 +35,8 @@ const RoomSchema = new Schema({
   },
 })
 
-RoomSchema.post('deleteOne', roomRemove)
+
+RoomSchema.post('findOneAndDelete', roomRemove)
 
 const RoomModel = mongoose.model<IRoom>('Room', RoomSchema)
 
