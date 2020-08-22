@@ -1,12 +1,15 @@
 import { isNil } from 'ramda'
-import Player, { IPlayer } from '../../models/Player'
+import Player from '../../models/Player'
 
 
 const getUpdateModelData = (newNick: string, newPassword: string) => {
-  if (isNil(newNick)) {
-    return { password: newPassword }
+  if (isNil(newNick) && isNil(newPassword)) {
+    return null
   }
-  return { nick: newNick }
+
+  return isNil(newNick)
+    ? { password: newPassword }
+    : { nick: newNick }
 }
 
 
@@ -20,29 +23,27 @@ const playerControllers = {
       return
     }
 
-    const { _id, owningRooms, joinedRooms } = player as IPlayer
-
-    const playerResponseData = {
-      _id,
-      owningRooms,
-      joinedRooms,
-    }
-    res.send(playerResponseData)
+    res.send(player)
   },
 
   change_data: async (req, res) => {
-    const { id, newNick, newPassword } = req.body
+    const { id, nick, password } = req.body
 
-    const updateModelObject = getUpdateModelData(newNick, newPassword)
+    const updateModelObject = getUpdateModelData(nick, password)
+
+    if (isNil(updateModelObject)) {
+      res.status(400).send('Nothing to update')
+      return
+    }
 
     Player.findByIdAndUpdate(
       id,
       updateModelObject,
-      function (error, player) {
+      function (error) {
         if (error) {
           res.status(400).send('Update failed')
         } else {
-          res.send(player)
+          res.send('Data had been updated')
         }
       }
     )
