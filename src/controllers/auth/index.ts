@@ -18,8 +18,7 @@ const authControllers = {
     }
 
     const token = jwt.sign({ _id: player?._id }, process.env.JWT_SECRET as Secret)
-    await res.header('auth-token', token)
-    res.send({ player, token })
+    await res.header('auth-token', token).send({ player, token })
   },
   auth_register: async (req, res) => {
     const { username, password } = req.body

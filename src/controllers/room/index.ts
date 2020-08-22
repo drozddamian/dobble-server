@@ -1,24 +1,27 @@
 import Room from '../../models/Room'
-import { isEmpty } from 'ramda'
+import { isEmpty, isNil } from 'ramda'
 import Player from '../../models/Player'
 
 
 const roomControllers = {
-  get_rooms: async (req,res) => {
+  get_rooms: async (req, res) => {
     const rooms = await Room.find({})
     if (isEmpty(rooms)) {
       res.status(400).send('Room list is empty')
+    } else {
+      res.send(rooms)
     }
-    res.send(rooms)
   },
 
   get_info: async (req, res) => {
     const { roomId } = req.params
     const room = await Room.find({ _id: roomId })
-    if (!room) {
+
+    if (room) {
+      res.send(room)
+    } else {
       res.status(400).send('Room not found')
     }
-    res.send(room)
   },
 
   create_room: async (req, res) => {
@@ -27,6 +30,7 @@ const roomControllers = {
     const player = await Player.findOne({ _id: ownerId })
     if (!player) {
       res.status(400).send('User not found')
+      return
     }
 
     const room = new Room({
@@ -44,7 +48,7 @@ const roomControllers = {
 
       res.send(savedRoom)
     } catch (error) {
-      res.status(500).send({error})
+      res.status(500).end(error)
     }
   },
 
@@ -52,9 +56,14 @@ const roomControllers = {
     const { roomId } = req.params
 
     const removeResponse = await Room.findByIdAndDelete(roomId)
-    res.send({
-      removed: removeResponse,
-    })
+
+    if (isNil(removeResponse)) {
+      res.status(400).send('Room not found')
+    } else {
+      res.send({
+        removed: removeResponse,
+      })
+    }
   }
 }
 

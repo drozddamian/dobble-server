@@ -1,8 +1,12 @@
+import { isNil } from 'ramda'
 import Player from '../Player'
 import { IRoom } from '../Room'
 
 const roomRemove = async (removedRoom: IRoom) => {
-  const { _id: removedRoomId } = removedRoom
+  const removedRoomId = removedRoom?._id
+  if (isNil(removedRoomId)) {
+    return
+  }
 
   try {
     await Player.updateMany(
