@@ -10,7 +10,7 @@ import room from './routes/room'
 
 const app: Application = express()
 const PORT : string|number = process.env.PORT || 5000
-const MONGO_DB_URI: string = process.env.MONGO_URI
+const MONGO_DB_URI: string = process.env.MONGODB_URI
 
 app.use(cors())
 app.use(bodyParser.json());
