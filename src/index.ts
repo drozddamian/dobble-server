@@ -7,6 +7,7 @@ import AppConfig from './config'
 import auth from './routes/auth'
 import player from './routes/player'
 import room from './routes/room'
+import { API } from './constants/apiEndpoints'
 
 const app: Application = express()
 const PORT : string|number = process.env.PORT || 5000
@@ -24,9 +25,9 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.use('/api/auth', auth)
-app.use('/api/player', player)
-app.use('/api/room', room)
+app.use(API.AUTH, auth)
+app.use(API.PLAYER, player)
+app.use(API.ROOM, room)
 
 app.use((req, res, next) =>{
   res.status(500).end()
