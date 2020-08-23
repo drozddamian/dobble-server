@@ -9,6 +9,7 @@ import player from './routes/player'
 import room from './routes/room'
 
 const app: Application = express()
+const PORT : string|number = process.env.PORT || 5000
 
 app.use(cors())
 app.use(bodyParser.json());
@@ -30,7 +31,6 @@ app.use((req, res, next) =>{
   res.status(500).end()
 })
 
-const port = process.env.PORT || 3000
-app.listen(port, () =>
+app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )

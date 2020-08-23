@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "tsnd --respawn src/index.ts",
+    "dev": "nodemon -x tsnd src/index.ts",
     "prod": "tsc && node ./build/app.js"
   },
   "engines": {
