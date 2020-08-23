@@ -10,12 +10,13 @@ import room from './routes/room'
 
 const app: Application = express()
 const PORT : string|number = process.env.PORT || 5000
+const MONGO_DB_URI: string = process.env.MONGO_URI
 
 app.use(cors())
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
-mongoose.connect(process.env.MONGO_URI as string, AppConfig.mongoose)
+mongoose.connect(MONGO_DB_URI, AppConfig.mongoose)
   .then(() => console.log('Connection with database have been established'))
   .catch((error) => console.log('Database connection error: ' + error));
 
