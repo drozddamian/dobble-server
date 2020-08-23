@@ -32,7 +32,7 @@
     "typescript": "^3.9.7"
   },
   "scripts": {
-    "start": "tsnd --respawn ./src/server.ts",
+    "start": "tsnd --respawn src/index.ts",
     "prod": "tsc && node ./build/app.js"
   },
   "engines": {
