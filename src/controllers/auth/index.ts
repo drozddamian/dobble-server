@@ -37,7 +37,7 @@ const authControllers = {
 
     const player = new Player({
       username,
-      nickname: username,
+      nick: username,
       password: hashedPassword,
     })
 
