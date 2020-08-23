@@ -1,0 +1,29 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "semi": "off",
+        "prefer-const": 1,
+        "prefer-template": "error",
+        "default-param-last": "error",
+        "no-param-reassign": 1,
+        "prefer-spread": 1,
+        "function-paren-newline": 1,
+        "no-console": "warn",
+        "space-before-function-paren": 0
+    }
+}
