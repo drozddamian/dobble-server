@@ -26,7 +26,9 @@ const playerControllers = {
 
     const mappedPlayerData = mapPlayerData(player)
 
-    res.send(mappedPlayerData)
+    res.send({
+      player: mappedPlayerData
+    })
   },
 
   change_data: async (req, res) => {

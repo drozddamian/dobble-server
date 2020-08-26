@@ -23,7 +23,7 @@ const authControllers = {
     const mappedPlayerData = mapPlayerData(player)
 
     const token = jwt.sign({ _id: player?._id }, process.env.JWT_SECRET as Secret)
-    await res.header('auth-token', token).send({ mappedPlayerData, token })
+    await res.header('auth-token', token).send({ player: mappedPlayerData, token })
   },
   auth_register: async (req, res) => {
     const { username, nick, password } = req.body
@@ -47,7 +47,9 @@ const authControllers = {
     try {
       const savedPlayer = await player.save()
       const mappedPlayerData = mapPlayerData(savedPlayer)
-      res.send(mappedPlayerData)
+      res.send({
+        player: mappedPlayerData,
+      })
     } catch (error) {
       res.status(500).send({error})
     }
