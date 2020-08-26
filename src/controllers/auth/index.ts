@@ -43,7 +43,7 @@ const authControllers = {
 
     try {
       await player.save()
-      res.send(username)
+      res.send({ username })
     } catch (error) {
       res.status(500).send({error})
     }
