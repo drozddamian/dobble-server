@@ -1,5 +1,6 @@
 import { isNil } from 'ramda'
 import Player from '../../models/Player'
+import { mapPlayerData } from '../../utils/apiResponseMapper'
 
 
 const getUpdateModelData = (newNick: string, newPassword: string) => {
@@ -23,7 +24,9 @@ const playerControllers = {
       return
     }
 
-    res.send(player)
+    const mappedPlayerData = mapPlayerData(player)
+
+    res.send(mappedPlayerData)
   },
 
   change_data: async (req, res) => {

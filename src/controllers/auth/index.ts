@@ -2,6 +2,7 @@ import 'dotenv/config'
 import jwt, { Secret } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
+import { mapPlayerData } from '../../utils/apiResponseMapper'
 
 const authControllers = {
   auth_login: async (req,res) => {
@@ -19,8 +20,10 @@ const authControllers = {
       return
     }
 
+    const mappedPlayerData = mapPlayerData(player)
+
     const token = jwt.sign({ _id: player?._id }, process.env.JWT_SECRET as Secret)
-    await res.header('auth-token', token).send({ player, token })
+    await res.header('auth-token', token).send({ mappedPlayerData, token })
   },
   auth_register: async (req, res) => {
     const { username, nick, password } = req.body
@@ -42,8 +45,9 @@ const authControllers = {
     })
 
     try {
-      await player.save()
-      res.send({ username })
+      const savedPlayer = await player.save()
+      const mappedPlayerData = mapPlayerData(savedPlayer)
+      res.send(mappedPlayerData)
     } catch (error) {
       res.status(500).send({error})
     }
