@@ -23,7 +23,7 @@ const authControllers = {
     await res.header('auth-token', token).send({ player, token })
   },
   auth_register: async (req, res) => {
-    const { username, password } = req.body
+    const { username, nick, password } = req.body
 
     const playerExists = await Player.findOne({ username })
 
@@ -37,13 +37,13 @@ const authControllers = {
 
     const player = new Player({
       username,
-      nick: username,
+      nick: nick,
       password: hashedPassword,
     })
 
     try {
-      const savedPlayer = await player.save()
-      res.send(savedPlayer)
+      await player.save()
+      res.send(username)
     } catch (error) {
       res.status(500).send({error})
     }
