@@ -14,7 +14,11 @@ const roomControllers = {
   },
 
   get_top_five_rooms: async (req, res) => {
-    const topRooms = await Room.find({}).sort({ howManyPlayers: -1 }).limit(5).exec()
+    const topRooms = await Room.find({})
+      .sort({ howManyPlayers: -1 })
+      .limit(5)
+      .populate('owner')
+      .exec()
 
     if (isEmpty(topRooms)) {
       res.status(400).send('Room list is empty')
@@ -26,6 +30,8 @@ const roomControllers = {
   get_info: async (req, res) => {
     const { roomId } = req.params
     const room = await Room.find({ _id: roomId })
+      .populate('owner')
+      .populate('players')
 
     if (room) {
       res.send(room)

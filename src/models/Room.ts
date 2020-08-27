@@ -10,6 +10,7 @@ export interface IRoom extends Document {
   owner: IPlayer[];
   players?: IPlayer[];
   howManyPlayers: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  createdAt: Date;
 }
 
 const ROOM_EXPIRATION_DATE = 3600 * 24 * 7
