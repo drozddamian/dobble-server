@@ -21,11 +21,13 @@ const RoomSchema = new Schema({
     type: String,
     minlength: 3,
     maxLength: 30,
+    required: true,
   },
   availableSeats: {
     type: Number,
     min: 2,
     max: 6,
+    required: true,
   },
   owner: {
     type: Schema.Types.ObjectId,

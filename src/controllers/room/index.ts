@@ -56,7 +56,7 @@ const roomControllers = {
     }
 
     const room = new Room({
-      roomName,
+      name: roomName,
       availableSeats,
       owner: player,
       players: [player],
