@@ -6,6 +6,7 @@ import { roomRemove } from './modelsMiddleware/roomChange'
 
 
 export interface IRoom extends Document {
+  name: string;
   availableSeats: 2 | 3 | 4 | 5 | 6;
   owner: IPlayer[];
   players?: IPlayer[];
@@ -16,6 +17,11 @@ export interface IRoom extends Document {
 const ROOM_EXPIRATION_DATE = 3600 * 24 * 7
 
 const RoomSchema = new Schema({
+  name: {
+    type: String,
+    minlength: 3,
+    maxLength: 30,
+  },
   availableSeats: {
     type: Number,
     min: 2,

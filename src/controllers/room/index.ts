@@ -41,7 +41,13 @@ const roomControllers = {
   },
 
   create_room: async (req, res) => {
-    const { availableSeats, ownerId } = req.body
+    const { name: roomName, availableSeats, ownerId } = req.body
+
+    const sameNameRoom = await Room.find({ name: roomName })
+    if (sameNameRoom) {
+      res.status(400).send('Room with that name already exists')
+      return
+    }
 
     const player = await Player.findOne({ _id: ownerId })
     if (!player) {
@@ -50,6 +56,7 @@ const roomControllers = {
     }
 
     const room = new Room({
+      roomName,
       availableSeats,
       owner: player,
       players: [player],
