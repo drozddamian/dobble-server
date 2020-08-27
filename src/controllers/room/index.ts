@@ -44,7 +44,7 @@ const roomControllers = {
     const { name: roomName, availableSeats, ownerId } = req.body
 
     const sameNameRoom = await Room.find({ name: roomName })
-    if (sameNameRoom) {
+    if (!isEmpty(sameNameRoom)) {
       res.status(400).send('Room with that name already exists')
       return
     }
