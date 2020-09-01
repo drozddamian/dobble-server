@@ -1,7 +1,6 @@
 import Room from '../../models/Room'
-import { isEmpty, isNil } from 'ramda'
+import { isEmpty, isNil, equals } from 'ramda'
 import Player from '../../models/Player'
-
 
 const roomControllers = {
   get_rooms: async (req, res) => {
@@ -64,15 +63,13 @@ const roomControllers = {
     })
 
     try {
-      const savedRoom = await room.save()
-
-      player.owningRooms.push(savedRoom)
-      player.joinedRooms.push(savedRoom)
+      player.owningRooms.push(room)
+      player.joinedRooms.push(room)
       await player.save()
-
-      res.send(savedRoom)
+      await room.save()
+      res.send(room)
     } catch (error) {
-      res.status(500).end(error)
+      res.status(500).send(error)
     }
   },
 
@@ -88,7 +85,61 @@ const roomControllers = {
         removed: removeResponse,
       })
     }
-  }
+  },
+
+  join_room: async (req, res) => {
+    const { roomId, playerId } = req.body
+
+    const joinedRoom = await Room.findOne({ _id: roomId })
+    if (!joinedRoom) {
+      res.status(400).send('Room not found')
+      return
+    }
+    if (joinedRoom.players.includes(playerId)) {
+      res.status(409).send("You've already joined the room")
+    }
+
+    try {
+      const player = await Player.findOneAndUpdate(
+        { _id: playerId },
+        { $push: { joinedRooms: joinedRoom } }
+      )
+
+      await joinedRoom.players.push(player)
+      await joinedRoom.save()
+      res.status(200).send('Success')
+    } catch (error) {
+      res.status(500).end(error)
+    }
+  },
+
+  leave_room: async (req, res) => {
+    const { roomId, playerId } = req.body
+
+    const leftRoom = await Room.findOne({ _id: roomId })
+    if (!leftRoom) {
+      res.status(400).send('Room not found')
+      return
+    }
+    if (!leftRoom.players.includes(playerId)) {
+      res.status(409).send('Player is not in the room')
+    }
+
+    try {
+      await Player.findOneAndUpdate(
+        { _id: playerId },
+        { $pull: { joinedRooms: roomId } }
+      )
+
+      await Room.findOneAndUpdate(
+        { _id: roomId },
+        { $pull: { players: playerId } }
+      )
+      res.status(200).send('Success')
+    } catch (error) {
+      res.status(500).send(error)
+    }
+  },
 }
 
 export default roomControllers

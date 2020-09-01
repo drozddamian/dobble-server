@@ -8,4 +8,6 @@ export enum API_METHODS {
   GET_ROOM = '/:roomId',
   CREATE_ROOM = '/create_room',
   DELETE_ROOM = '/:roomId',
+  JOIN_ROOM = '/join_room',
+  LEAVE_ROOM = '/leave_room',
 }
