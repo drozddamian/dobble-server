@@ -16,9 +16,9 @@ const getUpdateModelData = (newNick: string, newPassword: string) => {
 
 const playerControllers = {
   get_info: async (req, res) => {
-    const { username } = req.params
+    const { id } = req.params
 
-    const player = await Player.findOne({ username })
+    const player = await Player.findOne({ _id: id })
     if (!player) {
       res.status(400).send('User not found')
       return
