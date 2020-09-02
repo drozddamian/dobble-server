@@ -53,12 +53,18 @@ const authControllers = {
         player: mappedPlayerData,
       })
     } catch (error) {
-      res.status(500).send({error})
+      res.status(500).send(error)
     }
   },
 
   auth_logout: async (req, res) => {
-    res.removeHeader(AUTH_TOKEN).send('Logged out successful')
+    try {
+      await res.removeHeader(AUTH_TOKEN)
+      res.send('Logged out successful')
+    } catch (error) {
+      console.log(error)
+      res.status(500).send(error)
+    }
   },
 }
 
