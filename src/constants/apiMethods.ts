@@ -1,6 +1,7 @@
 export enum API_METHODS {
   LOGIN = '/login',
   REGISTER = '/register',
+  LOGOUT = '/logout',
   GET_PLAYER = '/:id',
   MODIFY_PLAYER = '/change_data',
   GET_ROOMS = '/list_rooms',

@@ -3,6 +3,7 @@ import jwt, { Secret } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
 import { mapPlayerData } from '../../utils/apiResponseMapper'
+import { AUTH_TOKEN } from '../../constants'
 
 const authControllers = {
   auth_login: async (req,res) => {
@@ -23,8 +24,9 @@ const authControllers = {
     const mappedPlayerData = mapPlayerData(player)
 
     const token = jwt.sign({ _id: player?._id }, process.env.JWT_SECRET as Secret)
-    await res.header('auth-token', token).send({ player: mappedPlayerData, token })
+    await res.header(AUTH_TOKEN, token).send({ player: mappedPlayerData, token })
   },
+
   auth_register: async (req, res) => {
     const { username, nick, password } = req.body
 
@@ -53,7 +55,11 @@ const authControllers = {
     } catch (error) {
       res.status(500).send({error})
     }
-  }
+  },
+
+  auth_logout: async (req, res) => {
+    res.removeHeader(AUTH_TOKEN).send('Logged out successful')
+  },
 }
 
 export default authControllers
