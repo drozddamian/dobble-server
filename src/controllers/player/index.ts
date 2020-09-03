@@ -19,6 +19,9 @@ const playerControllers = {
     const { id } = req.params
 
     const player = await Player.findOne({ _id: id })
+      .populate('owningRooms')
+      .populate('joinedRooms')
+
     if (!player) {
       res.status(400).send('User not found')
       return
