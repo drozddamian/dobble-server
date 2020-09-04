@@ -1,14 +1,30 @@
 import Room from '../../models/Room'
 import { isEmpty, isNil, equals } from 'ramda'
 import Player from '../../models/Player'
+import { mapPaginationRooms } from '../../utils/apiResponseMapper'
+import { PAGINATION_CHUNK_SIZE } from '../../constants'
+
+
 
 const roomControllers = {
   get_rooms: async (req, res) => {
-    const rooms = await Room.find({})
-    if (isEmpty(rooms)) {
-      res.status(400).send('Room list is empty')
-    } else {
-      res.send(rooms)
+    const { chunkNumber = 1 } = req.query
+
+    try {
+      const rooms = await Room.find()
+          .limit(PAGINATION_CHUNK_SIZE)
+          .skip((chunkNumber - 1) * PAGINATION_CHUNK_SIZE)
+
+      const howManyRooms = await Room.countDocuments()
+
+      if (isEmpty(rooms)) {
+        res.status(400).send('Room list is empty')
+      } else {
+        const mappedRooms = mapPaginationRooms(rooms, chunkNumber, howManyRooms)
+        res.send(mappedRooms)
+      }
+    } catch(error) {
+      res.status(500).send(error.message)
     }
   },
 
@@ -69,7 +85,7 @@ const roomControllers = {
       await room.save()
       res.send(room)
     } catch (error) {
-      res.status(500).send(error)
+      res.status(500).send(error.message)
     }
   },
 
