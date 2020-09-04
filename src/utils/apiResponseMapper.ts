@@ -45,16 +45,16 @@ export const mapRoomData = (room: IRoom): MappedRoom => {
 
 interface MappedRoomsPagination {
   rooms: IRoom[]
-  currentChunkNumber: number;
+  chunkNumber: number;
   howManyChunks: number;
 }
 
-export const mapPaginationRooms = (rooms: IRoom[], currentChunkNumber: number, howManyRooms: number): MappedRoomsPagination => {
+export const mapPaginationRooms = (rooms: IRoom[], chunkNumber: number, howManyRooms: number): MappedRoomsPagination => {
   const howManyChunks = Math.ceil(howManyRooms / PAGINATION_CHUNK_SIZE)
 
   return {
     rooms,
-    currentChunkNumber,
+    chunkNumber,
     howManyChunks,
   }
 }
