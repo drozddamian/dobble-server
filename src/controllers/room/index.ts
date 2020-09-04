@@ -12,15 +12,15 @@ const roomControllers = {
 
     try {
       const rooms = await Room.find()
-          .limit(PAGINATION_CHUNK_SIZE)
-          .skip((chunkNumber - 1) * PAGINATION_CHUNK_SIZE)
+        .limit(PAGINATION_CHUNK_SIZE)
+        .skip((chunkNumber - 1) * PAGINATION_CHUNK_SIZE)
 
       const howManyRooms = await Room.countDocuments()
 
       if (isEmpty(rooms)) {
         res.status(400).send('Room list is empty')
       } else {
-        const mappedRooms = mapPaginationRooms(rooms, chunkNumber, howManyRooms)
+        const mappedRooms = mapPaginationRooms(rooms, Number(chunkNumber), howManyRooms)
         res.send(mappedRooms)
       }
     } catch(error) {

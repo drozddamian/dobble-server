@@ -50,7 +50,7 @@ interface MappedRoomsPagination {
 }
 
 export const mapPaginationRooms = (rooms: IRoom[], currentChunkNumber: number, howManyRooms: number): MappedRoomsPagination => {
-  const howManyChunks = Number(Math.ceil(howManyRooms / PAGINATION_CHUNK_SIZE))
+  const howManyChunks = Math.ceil(howManyRooms / PAGINATION_CHUNK_SIZE)
 
   return {
     rooms,
