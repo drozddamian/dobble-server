@@ -1,5 +1,7 @@
+import { last } from 'ramda'
 import { IPlayer } from '../models/Player'
 import { IRoom } from '../models/Room'
+import { PAGINATION_CHUNK_SIZE } from '../constants'
 
 interface MappedPlayer {
   id: string;
@@ -38,5 +40,21 @@ export const mapRoomData = (room: IRoom): MappedRoom => {
     players,
     availableSeats,
     howManyPlayers,
+  }
+}
+
+interface MappedRoomsPagination {
+  rooms: IRoom[]
+  currentChunkNumber: number;
+  howManyChunks: number;
+}
+
+export const mapPaginationRooms = (rooms: IRoom[], currentChunkNumber: number, howManyRooms: number): MappedRoomsPagination => {
+  const howManyChunks = Math.ceil(howManyRooms / PAGINATION_CHUNK_SIZE)
+
+  return {
+    rooms,
+    currentChunkNumber,
+    howManyChunks,
   }
 }
