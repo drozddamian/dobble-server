@@ -53,7 +53,7 @@ const authControllers = {
         player: mappedPlayerData,
       })
     } catch (error) {
-      res.status(500).send(error)
+      res.status(500).send(error.message)
     }
   },
 
@@ -63,7 +63,7 @@ const authControllers = {
       res.send('Logged out successful')
     } catch (error) {
       console.log(error)
-      res.status(500).send(error)
+      res.status(500).send(error.message)
     }
   },
 }

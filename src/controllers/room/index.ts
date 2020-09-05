@@ -125,7 +125,7 @@ const roomControllers = {
       await joinedRoom.save()
       res.status(200).send('Success')
     } catch (error) {
-      res.status(500).end(error)
+      res.status(500).end(error.message)
     }
   },
 
@@ -153,7 +153,7 @@ const roomControllers = {
       )
       res.status(200).send('Success')
     } catch (error) {
-      res.status(500).send(error)
+      res.status(500).send(error.message)
     }
   },
 }
