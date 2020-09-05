@@ -6,6 +6,9 @@ export interface IPlayer extends Document {
   username: string;
   password: string;
   nick: string;
+  level: number;
+  experience: number;
+  experienceToNextLevel: number;
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
 }
@@ -29,6 +32,22 @@ const PlayerSchema = new Schema({
     required: true,
     minlength: 3,
     maxlength: 14,
+  },
+  level: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 99,
+  },
+  experience: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  experienceToNextLevel: {
+    type: Number,
+    required: true,
+    min: 10,
   },
   owningRooms: [{
     type: Schema.Types.ObjectId,
