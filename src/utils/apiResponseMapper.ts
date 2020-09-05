@@ -1,10 +1,9 @@
-import { last } from 'ramda'
 import { IPlayer } from '../models/Player'
 import { IRoom } from '../models/Room'
 import { PAGINATION_CHUNK_SIZE } from '../constants'
 
 interface MappedPlayer {
-  id: string;
+  _id: string;
   username: string;
   nick: string;
   owningRooms?: IRoom[];
@@ -14,7 +13,7 @@ interface MappedPlayer {
 export const mapPlayerData = (player: IPlayer): MappedPlayer => {
   const { _id, username, nick, owningRooms, joinedRooms } = player
   return {
-    id: _id,
+    _id,
     username,
     nick,
     owningRooms,
@@ -23,7 +22,7 @@ export const mapPlayerData = (player: IPlayer): MappedPlayer => {
 }
 
 interface MappedRoom {
-  id: string;
+  _id: string;
   createdAt: Date;
   owner: any;
   players: IPlayer[];
@@ -34,7 +33,7 @@ interface MappedRoom {
 export const mapRoomData = (room: IRoom): MappedRoom => {
   const { _id, createdAt, owner, players, availableSeats, howManyPlayers } = room
   return {
-    id: _id,
+    _id,
     createdAt,
     owner,
     players,
