@@ -6,16 +6,26 @@ interface MappedPlayer {
   _id: string;
   username: string;
   nick: string;
+  level: number
+  experience: number;
+  experienceToNextLevel: number;
+  percentToNextLevel: number;
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
 }
 
 export const mapPlayerData = (player: IPlayer): MappedPlayer => {
-  const { _id, username, nick, owningRooms, joinedRooms } = player
+  const { _id, username, nick, level, experience, experienceToNextLevel, owningRooms, joinedRooms} = player
+
+  const percentToNextLevel = Math.floor((experience * 100) / experienceToNextLevel)
   return {
     _id,
     username,
     nick,
+    level,
+    experience,
+    experienceToNextLevel,
+    percentToNextLevel,
     owningRooms,
     joinedRooms
   }

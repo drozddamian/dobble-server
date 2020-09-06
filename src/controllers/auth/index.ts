@@ -3,7 +3,7 @@ import jwt, { Secret } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
 import { mapPlayerData } from '../../utils/apiResponseMapper'
-import { AUTH_TOKEN } from '../../constants'
+import { AUTH_TOKEN, EXPERIENCE_TO_SECOND_LEVEL } from '../../constants'
 
 const authControllers = {
   auth_login: async (req,res) => {
@@ -44,6 +44,9 @@ const authControllers = {
       username,
       nick: nick,
       password: hashedPassword,
+      level: 1,
+      experience: 0,
+      experienceToNextLevel: EXPERIENCE_TO_SECOND_LEVEL,
     })
 
     try {
@@ -53,7 +56,7 @@ const authControllers = {
         player: mappedPlayerData,
       })
     } catch (error) {
-      res.status(500).send(error)
+      res.status(500).send(error.message)
     }
   },
 
@@ -63,7 +66,7 @@ const authControllers = {
       res.send('Logged out successful')
     } catch (error) {
       console.log(error)
-      res.status(500).send(error)
+      res.status(500).send(error.message)
     }
   },
 }
