@@ -4,10 +4,11 @@ import { API_METHODS } from '../../constants/apiMethods'
 
 const router = express.Router()
 
-const { get_info, change_data } = playerController
+const { get_player, get_podium_players, change_player } = playerController
 
 router
-  .get(API_METHODS.GET_PLAYER, get_info)
-  .put(API_METHODS.MODIFY_PLAYER, change_data)
+  .get(API_METHODS.SINGLE_PLAYER, get_player)
+  .get(API_METHODS.PODIUM_PLAYERS, get_podium_players)
+  .put(API_METHODS.SINGLE_PLAYER, change_player)
 
 export default router

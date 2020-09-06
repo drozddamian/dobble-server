@@ -42,9 +42,9 @@ const roomControllers = {
     }
   },
 
-  get_info: async (req, res) => {
-    const { roomId } = req.params
-    const room = await Room.find({ _id: roomId })
+  get_single_room: async (req, res) => {
+    const { id } = req.params
+    const room = await Room.find({ _id: id })
       .populate('owner')
       .populate('players')
 
@@ -90,9 +90,9 @@ const roomControllers = {
   },
 
   remove_room: async (req, res) => {
-    const { roomId } = req.params
+    const { id } = req.params
 
-    const removeResponse = await Room.findByIdAndDelete(roomId)
+    const removeResponse = await Room.findByIdAndDelete(id)
 
     if (isNil(removeResponse)) {
       res.status(400).send('Room not found')

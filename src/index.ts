@@ -25,9 +25,9 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.use(API.AUTH, auth)
-app.use(API.PLAYER, player)
-app.use(API.ROOM, room)
+app.use(API.AUTHENTICATION, auth)
+app.use(API.PLAYERS, player)
+app.use(API.ROOMS, room)
 
 app.use((req, res, next) =>{
   res.status(500).end()

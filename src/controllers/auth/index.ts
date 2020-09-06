@@ -6,7 +6,7 @@ import { mapPlayerData } from '../../utils/apiResponseMapper'
 import { AUTH_TOKEN, EXPERIENCE_TO_SECOND_LEVEL } from '../../constants'
 
 const authControllers = {
-  auth_login: async (req,res) => {
+  login: async (req,res) => {
     const { username, password } = req.body
 
     const player = await Player.findOne({ username })
@@ -27,7 +27,7 @@ const authControllers = {
     await res.header(AUTH_TOKEN, token).send({ player: mappedPlayerData, token })
   },
 
-  auth_register: async (req, res) => {
+  register: async (req, res) => {
     const { username, nick, password } = req.body
 
     const playerExists = await Player.findOne({ username })
@@ -60,7 +60,7 @@ const authControllers = {
     }
   },
 
-  auth_logout: async (req, res) => {
+  logout: async (req, res) => {
     try {
       await res.removeHeader(AUTH_TOKEN)
       res.send('Logged out successful')

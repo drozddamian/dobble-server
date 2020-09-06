@@ -15,7 +15,7 @@ const getUpdateModelData = (newNick: string, newPassword: string) => {
 
 
 const playerControllers = {
-  get_info: async (req, res) => {
+  get_player: async (req, res) => {
     const { id } = req.params
 
     const player = await Player.findOne({ _id: id })
@@ -34,7 +34,21 @@ const playerControllers = {
     })
   },
 
-  change_data: async (req, res) => {
+  get_podium_players: async (req, res) => {
+    try {
+      const podiumPlayers = await Player.find()
+        .sort('level')
+        .limit(3)
+      console.log(podiumPlayers)
+
+
+      res.send(podiumPlayers)
+    } catch (error) {
+      res.status(400).send(error.message)
+    }
+  },
+
+  change_player: async (req, res) => {
     const { id, nick, password } = req.body
 
     const updateModelObject = getUpdateModelData(nick, password)

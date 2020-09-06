@@ -1,5 +1,5 @@
 export enum API {
-  AUTH = '/api/auth',
-  PLAYER = '/api/player',
-  ROOM = '/api/room',
+  AUTHENTICATION = '/api/authentication',
+  PLAYERS = '/api/players',
+  ROOMS = '/api/rooms',
 }
