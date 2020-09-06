@@ -16,29 +16,23 @@ const roomControllers = {
         .skip((chunkNumber - 1) * PAGINATION_CHUNK_SIZE)
 
       const howManyRooms = await Room.countDocuments()
-
-      if (isEmpty(rooms)) {
-        res.status(400).send('Room list is empty')
-      } else {
-        const mappedRooms = mapPaginationRooms(rooms, Number(chunkNumber), howManyRooms)
-        res.send(mappedRooms)
-      }
+      const mappedRooms = mapPaginationRooms(rooms, Number(chunkNumber), howManyRooms)
+      res.send(mappedRooms)
     } catch(error) {
       res.status(500).send(error.message)
     }
   },
 
   get_top_five_rooms: async (req, res) => {
-    const topRooms = await Room.find({})
-      .sort({ howManyPlayers: -1 })
-      .limit(5)
-      .populate('owner')
-      .exec()
-
-    if (isEmpty(topRooms)) {
-      res.status(400).send('Room list is empty')
-    } else {
+    try {
+      const topRooms = await Room.find({})
+        .sort({howManyPlayers: -1})
+        .limit(5)
+        .populate('owner')
+        .exec()
       res.send(topRooms)
+    } catch (error) {
+      res.status(500).send(error.message)
     }
   },
 

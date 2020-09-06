@@ -39,8 +39,6 @@ const playerControllers = {
       const podiumPlayers = await Player.find()
         .sort('level')
         .limit(3)
-      console.log(podiumPlayers)
-
 
       res.send(podiumPlayers)
     } catch (error) {
