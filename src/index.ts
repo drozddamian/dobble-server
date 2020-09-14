@@ -9,6 +9,7 @@ import player from './routes/player'
 import room from './routes/room'
 import { API } from './constants/apiEndpoints'
 
+
 const app: Application = express()
 const PORT : string|number = process.env.PORT || 5000
 const MONGO_DB_URI: string = process.env.MONGODB_URI
