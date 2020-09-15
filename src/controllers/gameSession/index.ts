@@ -16,7 +16,7 @@ const gameSessionControllers = {
   },
 
   join_game_session: async (req, res) => {
-    const { sessionId, playerId } = req.query
+    const { sessionId, playerId } = req.body
 
     try {
       const game = await GameSession.findOneAndUpdate(
