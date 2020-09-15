@@ -9,4 +9,5 @@ export enum API_METHODS {
   SINGLE_ROOM = '/:id',
   JOIN_ROOM = '/join_room',
   LEAVE_ROOM = '/leave_room',
+  SINGLE_GAME_SESSION = '/:id',
 }

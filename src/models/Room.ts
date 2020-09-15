@@ -2,6 +2,7 @@ import mongoose, { Document } from 'mongoose'
 import Player from './Player'
 const Schema = mongoose.Schema
 import { IPlayer } from './Player'
+import { IGameSession } from './GameSession'
 import { roomRemove } from './modelsMiddleware/roomChange'
 
 
@@ -10,6 +11,7 @@ export interface IRoom extends Document {
   availableSeats: 2 | 3 | 4 | 5 | 6;
   owner: IPlayer[];
   players?: IPlayer[];
+  gameSession: IGameSession;
   howManyPlayers: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   createdAt: Date;
 }
@@ -28,6 +30,10 @@ const RoomSchema = new Schema({
     min: 2,
     max: 6,
     required: true,
+  },
+  gameSession: {
+    type: Schema.Types.ObjectId,
+    ref: 'GameSession',
   },
   owner: {
     type: Schema.Types.ObjectId,

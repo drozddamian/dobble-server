@@ -9,6 +9,7 @@ export interface IPlayer extends Document {
   level: number;
   experience: number;
   experienceToNextLevel: number;
+  wonGames: number;
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
 }
