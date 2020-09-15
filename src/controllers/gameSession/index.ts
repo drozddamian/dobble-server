@@ -1,6 +1,4 @@
 import GameSession from '../../models/GameSession'
-import Room from '../../models/Room'
-import Player from '../../models/Player'
 
 
 const gameSessionControllers = {
@@ -19,7 +17,14 @@ const gameSessionControllers = {
     const { sessionId, playerId } = req.query
 
     try {
-      const game = await GameSession.findOneAndUpdate(
+      const game = await GameSession.findOne({ _id: sessionId })
+
+      if (game.players.includes(playerId)) {
+        res.status(409).send('User already exist in this game session')
+        return
+      }
+
+      game.update(
         { _id: sessionId },
         { $push: { players: playerId } }
       )
