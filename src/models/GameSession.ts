@@ -8,7 +8,6 @@ import { IRoom } from './Room'
 export interface IGameSession extends Document {
   isGameInProcess: Boolean;
   room: IRoom;
-  winner?: IPlayer;
   players: IPlayer[];
 }
 
