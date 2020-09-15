@@ -7,7 +7,10 @@ import AppConfig from './config'
 import auth from './routes/auth'
 import player from './routes/player'
 import room from './routes/room'
+import gameSession from './routes/gameSession'
+import game from './routes/game'
 import { API } from './constants/apiEndpoints'
+
 
 const app: Application = express()
 const PORT : string|number = process.env.PORT || 5000
@@ -21,13 +24,11 @@ mongoose.connect(MONGO_DB_URI, AppConfig.mongoose)
   .then(() => console.log('Connection with database have been established'))
   .catch((error) => console.log('Database connection error: ' + error));
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 app.use(API.AUTHENTICATION, auth)
 app.use(API.PLAYERS, player)
 app.use(API.ROOMS, room)
+app.use(API.GAME_SESSIONS, gameSession)
+app.use(API.GAMES, game)
 
 app.use((req, res, next) =>{
   res.status(500).end()

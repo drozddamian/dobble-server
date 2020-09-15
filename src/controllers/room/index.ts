@@ -1,6 +1,7 @@
 import Room from '../../models/Room'
-import { isEmpty, isNil, equals } from 'ramda'
+import { isEmpty, isNil } from 'ramda'
 import Player from '../../models/Player'
+import GameSession from '../../models/GameSession'
 import { mapPaginationRooms } from '../../utils/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
 
@@ -38,7 +39,7 @@ const roomControllers = {
 
   get_single_room: async (req, res) => {
     const { id } = req.params
-    const room = await Room.find({ _id: id })
+    const room = await Room.findOne({ _id: id })
       .populate('owner')
       .populate('players')
 
@@ -64,18 +65,28 @@ const roomControllers = {
       return
     }
 
-    const room = new Room({
-      name: roomName,
-      availableSeats,
-      owner: player,
-      players: [player],
-      howManyPlayers: 1,
-    })
-
     try {
+      const room = await new Room({
+        name: roomName,
+        availableSeats,
+        owner: player,
+        players: [player],
+        howManyPlayers: 1,
+        gameSession: null,
+      })
+
+      const newGameSession = await new GameSession({
+        room,
+        players: [player],
+        isGameInProcess: false,
+      })
+
+      room.gameSession = newGameSession
       player.owningRooms.push(room)
       player.joinedRooms.push(room)
+
       await player.save()
+      await newGameSession.save()
       await room.save()
       res.send(room)
     } catch (error) {
