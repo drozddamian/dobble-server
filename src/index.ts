@@ -10,6 +10,7 @@ import room from './routes/room'
 import gameSession from './routes/gameSession'
 import game from './routes/game'
 import { API } from './constants/apiEndpoints'
+import GameSocket from './socket'
 
 
 const app: Application = express()
@@ -30,10 +31,12 @@ app.use(API.ROOMS, room)
 app.use(API.GAME_SESSIONS, gameSession)
 app.use(API.GAMES, game)
 
-app.use((req, res, next) =>{
+app.use((req, res, next) => {
   res.status(500).end()
 })
 
-app.listen(PORT, () =>
+const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )
+
+new GameSocket(server)
