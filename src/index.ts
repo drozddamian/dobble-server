@@ -3,6 +3,7 @@ import express, { Application } from 'express';
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
+import socketIo from 'socket.io'
 import AppConfig from './config'
 import auth from './routes/auth'
 import player from './routes/player'
@@ -34,6 +35,15 @@ app.use((req, res, next) =>{
   res.status(500).end()
 })
 
-app.listen(PORT, () =>
+const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )
+
+const io = socketIo(server)
+
+io.on('connection', (socket) => {
+  socket.on('event:card-chosen', (cardName) => {
+    console.log(cardName)
+    io.emit('event:move-result', cardName)
+  });
+})
