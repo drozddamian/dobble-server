@@ -3,7 +3,6 @@ import express, { Application } from 'express';
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
-import socketIo from 'socket.io'
 import AppConfig from './config'
 import auth from './routes/auth'
 import player from './routes/player'
@@ -11,6 +10,7 @@ import room from './routes/room'
 import gameSession from './routes/gameSession'
 import game from './routes/game'
 import { API } from './constants/apiEndpoints'
+import GameSocket from './socket'
 
 
 const app: Application = express()
@@ -31,7 +31,7 @@ app.use(API.ROOMS, room)
 app.use(API.GAME_SESSIONS, gameSession)
 app.use(API.GAMES, game)
 
-app.use((req, res, next) =>{
+app.use((req, res, next) => {
   res.status(500).end()
 })
 
@@ -39,11 +39,4 @@ const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )
 
-const io = socketIo(server)
-
-io.on('connection', (socket) => {
-  socket.on('event:card-chosen', (cardName) => {
-    console.log(cardName)
-    io.emit('event:move-result', cardName)
-  });
-})
+new GameSocket(server)
