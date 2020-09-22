@@ -6,8 +6,10 @@ const router = express.Router()
 
 const { get_game_session, join_game_session } = gameSessionController
 
-router
-  .get(API_METHODS.SINGLE_GAME_SESSION, get_game_session)
-  .post(API_METHODS.SINGLE_GAME_SESSION, join_game_session)
+const gameSessionRouter = (socketIo) => {
+  return router
+    .get(API_METHODS.SINGLE_GAME_SESSION, get_game_session)
+    .post(API_METHODS.ROOT, join_game_session(socketIo))
+}
 
-export default router
+export default gameSessionRouter
