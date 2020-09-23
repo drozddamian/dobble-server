@@ -1,6 +1,5 @@
 import PACK_OF_CARDS from '../constants/cards'
 
-
 const shuffleCards = (cards: any) => {
   const swappingTimes = Math.floor((Math.random() * 5) + 5)
   for (let shuffleCounter = 0; shuffleCounter < swappingTimes; shuffleCounter++) {
@@ -12,15 +11,6 @@ const shuffleCards = (cards: any) => {
   return cards
 }
 
-
 export const getCards = () => {
-  const shuffledCards = shuffleCards(PACK_OF_CARDS)
-
-  const firstTableCard = shuffledCards[shuffledCards.length - 1]
-  shuffledCards.pop()
-
-  return {
-    firstTableCard,
-    cards: shuffledCards,
-  }
+  return shuffleCards(PACK_OF_CARDS)
 }

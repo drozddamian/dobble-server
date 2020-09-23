@@ -1,6 +1,10 @@
 import socketIo, { Socket } from 'socket.io'
-import GameSession, {IGameSession} from '../models/GameSession'
+import GameSession, { IGameSession } from '../models/GameSession'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
+import { getCards } from '../utils/cards'
+import { PackOfCards } from '../types'
+import {IPlayer} from "../models/Player";
+
 
 const {
   PLAYER_JOIN,
@@ -14,10 +18,35 @@ const ROUND_START_COUNTER = 3
 
 class GameSocket {
   io: Socket;
+  cards: PackOfCards;
+  roundPlayers: IPlayer[];
+  howManyPlayersInTheRound: number;
 
   constructor() {
     this.io = socketIo().listen(80)
     this.initializeSocketConnection()
+    this.cards = getCards()
+  }
+
+  getFirstDealCards() {
+    const centerCard = this.cards.shift()
+    const tableCards = this.cards.splice(0, this.howManyPlayersInTheRound)
+
+    let cardsByPlayer = {}
+    this.roundPlayers.forEach((playerId, index) => {
+      // @ts-ignore
+      cardsByPlayer[playerId] = tableCards[index]
+    })
+
+    return {
+      centerCard,
+      cardsByPlayer,
+    }
+  }
+
+  distributeFirstCards() {
+    const firstDealCards = this.getFirstDealCards()
+    this.io.sockets.emit(ROUND_START, firstDealCards)
   }
 
   countDownToStartNewRound() {
@@ -30,6 +59,7 @@ class GameSocket {
 
       if (roundStartTimeLeft === 0) {
         clearInterval(roundCountdown)
+        this.distributeFirstCards()
       }
     }, 1000)
   }
@@ -65,12 +95,15 @@ class GameSocket {
       socket.on(ROUND_START, async ({ gameId }) => {
         try {
           const gameSession: IGameSession = await GameSession.findOne({ _id: gameId })
+          const howManyPlayersInTheRound = gameSession.players.length
 
-          if (gameSession.players.length < 2) {
+          if (howManyPlayersInTheRound < 2) {
             this.io.emit(GAME_ERROR, 'Not enough players')
             return
           }
 
+          this.roundPlayers = gameSession.players
+          this.howManyPlayersInTheRound = howManyPlayersInTheRound
           this.countDownToStartNewRound()
 
         } catch (error) {
@@ -82,7 +115,6 @@ class GameSocket {
         console.log(cardName)
         this.io.emit('event:move-result', cardName)
       })
-
     })
   }
 }
