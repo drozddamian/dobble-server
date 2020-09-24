@@ -1,9 +1,9 @@
 import socketIo, { Socket } from 'socket.io'
-import GameSession, { IGameSession } from '../models/GameSession'
+import GameTable , { IGameTable } from '../models/GameTable'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
 import { getCards } from '../utils/cards'
 import { PackOfCards } from '../types'
-import {IPlayer} from "../models/Player";
+import { IPlayer } from '../models/Player'
 
 
 const {
@@ -66,9 +66,13 @@ class GameSocket {
 
   initializeSocketConnection() {
     this.io.on('connection', (socket) => {
+      const tableId = socket.handshake.query['tableId']
+      socket.join(tableId)
+
+
       socket.on(PLAYER_JOIN, async ({ playerId, gameId }) => {
         try {
-          const updatedGame = await GameSession.findOneAndUpdate(
+          const updatedGame = await GameTable.findOneAndUpdate(
             { _id: gameId },
             { $addToSet: { players: playerId } },
             { 'new': true }
@@ -81,7 +85,7 @@ class GameSocket {
 
       socket.on(PLAYER_LEAVE, async ({ playerId, gameId }) => {
         try {
-          const updatedGame = await GameSession.findOneAndUpdate(
+          const updatedGame = await GameTable.findOneAndUpdate(
             { _id: gameId },
             { $pull: { players: playerId } },
             { 'new': true }
@@ -94,15 +98,15 @@ class GameSocket {
 
       socket.on(ROUND_START, async ({ gameId }) => {
         try {
-          const gameSession: IGameSession = await GameSession.findOne({ _id: gameId })
-          const howManyPlayersInTheRound = gameSession.players.length
+          const gameTable: IGameTable = await GameTable.findOne({ _id: gameId })
+          const howManyPlayersInTheRound = gameTable.players.length
 
           if (howManyPlayersInTheRound < 2) {
             this.io.emit(GAME_ERROR, 'Not enough players')
             return
           }
 
-          this.roundPlayers = gameSession.players
+          this.roundPlayers = gameTable.players
           this.howManyPlayersInTheRound = howManyPlayersInTheRound
           this.countDownToStartNewRound()
 
