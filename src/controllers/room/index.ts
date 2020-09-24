@@ -77,7 +77,6 @@ const roomControllers = {
 
       const newGameTable = await new GameTable({
         room,
-        players: [player],
         isGameInProcess: false,
       })
 

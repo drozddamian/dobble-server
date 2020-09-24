@@ -6,3 +6,5 @@ type CARD_SYMBOL = 'ANCHOR' | 'APPLE' | 'BABY_BOTTLE' | 'BOMB' | 'CACTUS' | 'CAN
     'SUN' | 'SUNGLASSES' | 'TAXI_CAR' | 'TORTOISE' | 'TREBLE_CLEF' | 'TREE' |'WATER_DROP' | 'YIN_AND_YANG' | 'ZEBRA';
 
 export type PackOfCards = Array<CARD_SYMBOL[]>
+
+export type Card = CARD_SYMBOL[]

@@ -16,10 +16,10 @@ const gameTableControllers = {
   },
 
   join_game_table: (socketIo) => async (req, res) => {
-    const { sessionId, playerId } = req.body
+    const { tableId, playerId } = req.body
 
     try {
-      const gameTable = await GameTable.findOne({ _id: sessionId })
+      const gameTable = await GameTable.findOne({ _id: tableId })
 
       if (gameTable.players.includes(playerId)) {
         res.status(409).send('User already exist in this game session')

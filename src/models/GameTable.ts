@@ -7,12 +7,14 @@ import { IRoom } from './Room'
 
 export interface IGameTable extends Document {
   isGameInProcess: Boolean;
+  roundStartCountdown: number;
   room: IRoom;
   players: IPlayer[];
 }
 
 const GameTableSchema = new Schema({
   isGameInProcess: Boolean,
+  roundStartCountdown: Number,
   room: {
     type: Schema.Types.ObjectId,
     ref: 'Room',
