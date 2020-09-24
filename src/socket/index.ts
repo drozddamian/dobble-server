@@ -1,20 +1,22 @@
 import socketIo, { Socket } from 'socket.io'
 import GameTable, { IGameTable } from '../models/GameTable'
-import GameRound from '../models/GameRound'
+import GameRound, {IGameRound} from '../models/GameRound'
 import Player from '../models/Player'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
 import { getCards } from '../utils/cards'
-import { chunkArray } from '../utils'
 import { PackOfCards } from '../types'
 import { mapGameRoundData } from '../utils/socketResponseMapper'
+import { chunkArray, getExperienceByCardsLeft } from '../utils'
 
 
 const {
   PLAYER_LEAVE,
   ROUND_START,
   GAME_ERROR,
+  GAME_END,
   TABLE_CHANGE,
   GAME_CHANGE,
+  SPOT_SHAPE,
 } = GAME_SOCKET_ACTIONS
 
 const ROUND_START_COUNTER = 3
@@ -32,9 +34,34 @@ class GameSocket {
   }
 
 
+  async addExperienceToPlayer(playerId: string, howManyCardsLeft: number) {
+    const experienceForSpotter = getExperienceByCardsLeft(howManyCardsLeft)
+
+    await Player.findOneAndUpdate(
+      { _id: playerId, },
+      { $inc: { experience: experienceForSpotter }}
+    )
+  }
+
   dispatchTableChange(gameTable) {
     const { isGameInProcess, roundStartCountdown, players } = gameTable
     this.io.emit(TABLE_CHANGE, { isGameInProcess, roundStartCountdown, players })
+  }
+
+  dispatchGameChange(gameRound: IGameRound) {
+    this.io.emit(GAME_CHANGE, mapGameRoundData(gameRound))
+  }
+
+  async dispatchGameEnd(playerId, gameId) {
+    const { nick } = await Player.findOne({ _id: playerId })
+
+    await GameTable.findOneAndUpdate(
+      { _id: gameId },
+      { isGameInProcess: false, roundStartCountdown: ROUND_START_COUNTER },
+      { 'new': true }
+    )
+
+    this.io.emit(GAME_END, { winner: nick })
   }
 
   getFirstDealCards(players) {
@@ -72,7 +99,7 @@ class GameSocket {
     })
     await newGameRound.save()
 
-    this.io.emit(GAME_CHANGE, mapGameRoundData(newGameRound))
+    this.dispatchGameChange(newGameRound)
   }
 
   async addPlayerToTable(tableId, playerId) {
@@ -155,6 +182,31 @@ class GameSocket {
 
           await this.countDownToStartNewRound(gameId)
 
+        } catch (error) {
+          this.io.emit(GAME_ERROR, error.message)
+        }
+      })
+
+      socket.on(SPOT_SHAPE, async ({ roundId, playerId }) => {
+        try {
+          const { cardsByPlayer } = await GameRound.findOne({ _id: roundId })
+          const newCenterCard = cardsByPlayer[playerId].cards.pop()
+          const playerCards = cardsByPlayer[playerId].cards
+          const howManyCardsLeft = playerCards.length - 1
+          cardsByPlayer[playerId].numberOfCardsLeft = howManyCardsLeft
+
+          const gameRound: IGameRound = await GameRound.findOneAndUpdate(
+            { _id: roundId },
+            { spotterId: playerId, centerCard: newCenterCard, cardsByPlayer },
+            { 'new': true }
+          )
+          this.dispatchGameChange(gameRound)
+
+          await this.addExperienceToPlayer(playerId, playerCards.length)
+
+          if (howManyCardsLeft === 0) {
+            await this.dispatchGameEnd(playerId, roundId)
+          }
         } catch (error) {
           this.io.emit(GAME_ERROR, error.message)
         }

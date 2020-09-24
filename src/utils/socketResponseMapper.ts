@@ -1,17 +1,14 @@
-import { head, isNil } from 'ramda'
+import { last, isNil } from 'ramda'
 import { IGameRound, CardsByPlayerCollection } from '../models/GameRound'
 import { Card } from '../types'
-import {
-  EXP_FOR_SPOTTER,
-  EXP_FOR_WINNER,
-} from '../constants'
+import { getExperienceByCardsLeft } from './index'
 
 
 function getExperienceForSpotter(cardsByPlayer: CardsByPlayerCollection, spotterId: string | null): number {
   if (isNil(spotterId)) { return 0 }
 
   const { numberOfCardsLeft } = cardsByPlayer[spotterId]
-  return numberOfCardsLeft === 1 ? EXP_FOR_WINNER : EXP_FOR_SPOTTER
+  return getExperienceByCardsLeft(numberOfCardsLeft)
 }
 
 
@@ -20,6 +17,7 @@ type CardsByPlayerId = {
 }
 
 interface MappedGameRound {
+  id: string;
   isGameRoundInProcess: boolean;
   spotterId: string;
   centerCard: Card;
@@ -28,7 +26,7 @@ interface MappedGameRound {
 }
 
 export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
-  const { isGameRoundInProcess, centerCard, cardsByPlayer, spotterId } = newGameRound
+  const { _id, isGameRoundInProcess, centerCard, cardsByPlayer, spotterId } = newGameRound
 
   const experienceForSpotter = getExperienceForSpotter(cardsByPlayer, spotterId)
 
@@ -37,11 +35,12 @@ export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
 
   playersInRound.forEach((playerId) => {
     const { cards } = cardsByPlayer[playerId]
-    cardsByPlayerId[playerId] = head(cards)
+    cardsByPlayerId[playerId] = last(cards)
   })
 
 
   return {
+    id: _id,
     isGameRoundInProcess,
     spotterId,
     centerCard,
