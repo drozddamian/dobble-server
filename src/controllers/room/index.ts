@@ -1,7 +1,7 @@
 import Room from '../../models/Room'
 import { isEmpty, isNil } from 'ramda'
 import Player from '../../models/Player'
-import GameSession from '../../models/GameSession'
+import GameTable from '../../models/GameTable'
 import { mapPaginationRooms } from '../../utils/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
 
@@ -72,21 +72,20 @@ const roomControllers = {
         owner: player,
         players: [player],
         howManyPlayers: 1,
-        gameSession: null,
+        gameTable: null,
       })
 
-      const newGameSession = await new GameSession({
+      const newGameTable = await new GameTable({
         room,
-        players: [player],
         isGameInProcess: false,
       })
 
-      room.gameSession = newGameSession
+      room.gameTable = newGameTable
       player.owningRooms.push(room)
       player.joinedRooms.push(room)
 
       await player.save()
-      await newGameSession.save()
+      await newGameTable.save()
       await room.save()
       res.send(room)
     } catch (error) {

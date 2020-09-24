@@ -5,14 +5,16 @@ import { IPlayer } from './Player'
 import { IRoom } from './Room'
 
 
-export interface IGameSession extends Document {
+export interface IGameTable extends Document {
   isGameInProcess: Boolean;
+  roundStartCountdown: number;
   room: IRoom;
   players: IPlayer[];
 }
 
-const GameSessionSchema = new Schema({
+const GameTableSchema = new Schema({
   isGameInProcess: Boolean,
+  roundStartCountdown: Number,
   room: {
     type: Schema.Types.ObjectId,
     ref: 'Room',
@@ -23,6 +25,6 @@ const GameSessionSchema = new Schema({
   }],
 })
 
-const GameSessionModel = mongoose.model<IGameSession>('GameSession', GameSessionSchema)
+const GameTableModel = mongoose.model<IGameTable>('GameTable', GameTableSchema)
 
-export default GameSessionModel
+export default GameTableModel
