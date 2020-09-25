@@ -27,8 +27,8 @@ class GameSocket {
   playerId: string;
   tableId: string;
 
-  constructor() {
-    this.io = socketIo().listen(80)
+  constructor(app) {
+    this.io = socketIo().listen(app)
     this.initializeSocketConnection()
     this.cards = getCards()
   }
