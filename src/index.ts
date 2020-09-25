@@ -14,7 +14,6 @@ import { API } from './constants/apiEndpoints'
 
 
 const app: Application = express()
-const gameSocket = new GameSocket(app)
 const PORT : string|number = process.env.PORT || 5000
 const MONGO_DB_URI: string = process.env.MONGODB_URI
 
@@ -30,14 +29,16 @@ mongoose.connect(MONGO_DB_URI, AppConfig.mongoose)
 app.use(API.AUTHENTICATION, auth)
 app.use(API.PLAYERS, player)
 app.use(API.ROOMS, room)
-app.use(API.GAME_TABLE, gameTable(gameSocket))
 app.use(API.GAMES, game)
 
 app.use((req, res, next) => {
   res.status(500).end()
 })
 
-app.listen(PORT, () =>
+const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )
+
+const gameSocket = new GameSocket(server)
+app.use(API.GAME_TABLE, gameTable(gameSocket))
 
