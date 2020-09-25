@@ -152,6 +152,11 @@ class GameSocket {
 
 
   initializeSocketConnection() {
+    this.io.configure(() => {
+      this.io.set("transports", ["xhr-polling"])
+      this.io.set("polling duration", 10)
+    })
+
     this.io.on('connection', async (socket) => {
       const tableId = socket.handshake.query['tableId']
       const playerId = socket.handshake.query['playerId']
