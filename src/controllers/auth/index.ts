@@ -2,7 +2,7 @@ import 'dotenv/config'
 import jwt, { Secret } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
-import { mapPlayerData } from '../../utils/apiResponseMapper'
+import { mapPlayerData } from '../../helpers/apiResponseMapper'
 import { AUTH_TOKEN, EXPERIENCE_TO_SECOND_LEVEL } from '../../constants'
 
 const authControllers = {

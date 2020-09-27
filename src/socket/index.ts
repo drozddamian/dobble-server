@@ -3,10 +3,10 @@ import GameTable, { IGameTable } from '../models/GameTable'
 import GameRound, {IGameRound} from '../models/GameRound'
 import Player from '../models/Player'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
-import { getCards } from '../utils/cards'
+import { getCards } from '../helpers/cards'
 import { PackOfCards } from '../types'
-import { mapGameRoundData } from '../utils/socketResponseMapper'
-import { chunkArray, getExperienceByCardsLeft } from '../utils'
+import { mapGameRoundData } from '../helpers/socketResponseMapper'
+import { chunkArray, getExperienceByCardsLeft } from '../helpers'
 
 
 const {

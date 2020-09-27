@@ -2,7 +2,7 @@ import Room from '../../models/Room'
 import { isEmpty, isNil } from 'ramda'
 import Player from '../../models/Player'
 import GameTable from '../../models/GameTable'
-import { mapPaginationRooms } from '../../utils/apiResponseMapper'
+import { mapPaginationRooms } from '../../helpers/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
 
 

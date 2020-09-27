@@ -1,6 +1,6 @@
 import { isNil } from 'ramda'
 import Player from '../../models/Player'
-import { mapPlayerData } from '../../utils/apiResponseMapper'
+import { mapPlayerData } from '../../helpers/apiResponseMapper'
 
 
 const getUpdateModelData = (newNick: string, newPassword: string) => {
