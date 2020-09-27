@@ -32,10 +32,6 @@ app.use(API.PLAYERS, player)
 app.use(API.ROOMS, room)
 app.use(API.GAMES, game)
 
-app.use((err, req, res, next) => {
-  handleError(err, res)
-})
-
 const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )
@@ -43,3 +39,6 @@ const server = app.listen(PORT, () =>
 const gameSocket = new GameSocket(server)
 app.use(API.GAME_TABLE, gameTable(gameSocket))
 
+app.use((err, req, res, next) => {
+  handleError(err, res)
+})
