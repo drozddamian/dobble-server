@@ -1,12 +1,12 @@
-import socketIo, { Socket } from 'socket.io'
+import SocketIO from 'socket.io'
 import GameTable, { IGameTable } from '../models/GameTable'
 import GameRound, {IGameRound} from '../models/GameRound'
 import Player from '../models/Player'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
-import { getCards } from '../utils/cards'
+import { getCards } from '../helpers/cards'
 import { PackOfCards } from '../types'
-import { mapGameRoundData } from '../utils/socketResponseMapper'
-import { chunkArray, getExperienceByCardsLeft } from '../utils'
+import { mapGameRoundData } from '../helpers/socketResponseMapper'
+import { chunkArray, getExperienceByCardsLeft } from '../helpers'
 
 
 const {
@@ -22,15 +22,15 @@ const {
 const ROUND_START_COUNTER = 3
 
 class GameSocket {
-  io: Socket;
+  io: SocketIO.Server;
   cards: PackOfCards;
   playerId: string;
   tableId: string;
 
-  constructor() {
-    this.io = socketIo().listen(80)
-    this.initializeSocketConnection()
+  constructor(app) {
+    this.io = SocketIO().listen(app)
     this.cards = getCards()
+    this.initializeSocketConnection()
   }
 
 

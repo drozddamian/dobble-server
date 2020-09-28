@@ -9,7 +9,7 @@
     "strict": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "outDir": "dist",
+    "outDir": "build",
     "baseUrl": ".",
     "paths": {
       "*": [
