@@ -2,16 +2,17 @@ import Room from '../../models/Room'
 import { isEmpty, isNil } from 'ramda'
 import Player from '../../models/Player'
 import GameTable from '../../models/GameTable'
-import { mapPaginationRooms } from '../../utils/apiResponseMapper'
+import { mapPaginationRooms } from '../../helpers/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
+import ErrorHandler from "../../helpers/error";
 
 
 
 const roomControllers = {
-  get_rooms: async (req, res) => {
-    const { chunkNumber = 1 } = req.query
-
+  get_rooms: async (req, res, next) => {
     try {
+      const { chunkNumber = 1 } = req.query
+
       const rooms = await Room.find()
         .limit(PAGINATION_CHUNK_SIZE)
         .skip((chunkNumber - 1) * PAGINATION_CHUNK_SIZE)
@@ -19,145 +20,160 @@ const roomControllers = {
       const howManyRooms = await Room.countDocuments()
       const mappedRooms = mapPaginationRooms(rooms, Number(chunkNumber), howManyRooms)
       res.send(mappedRooms)
+
     } catch(error) {
-      res.status(500).send(error.message)
+      next(error)
     }
   },
 
-  get_top_five_rooms: async (req, res) => {
+  get_top_five_rooms: async (req, res, next) => {
     try {
       const topRooms = await Room.find({})
-        .sort({howManyPlayers: -1})
+        .sort({ howManyPlayers: -1 })
         .limit(5)
         .populate('owner')
         .exec()
+
       res.send(topRooms)
+
     } catch (error) {
-      res.status(500).send(error.message)
+      next(error)
     }
   },
 
-  get_single_room: async (req, res) => {
-    const { id } = req.params
-    const room = await Room.findOne({ _id: id })
+  get_single_room: async (req, res, next) => {
+    try {
+      const { id } = req.params
+      const room = await Room.findOne({ _id: id }, (error) => {
+        if (error) {
+          next(new ErrorHandler(400, 'Room not found'))
+        }
+      })
       .populate('owner')
       .populate('players')
 
-    if (room) {
       res.send(room)
-    } else {
-      res.status(400).send('Room not found')
-    }
-  },
 
-  create_room: async (req, res) => {
-    const { name: roomName, availableSeats, ownerId } = req.body
-
-    const sameNameRoom = await Room.find({ name: roomName })
-    if (!isEmpty(sameNameRoom)) {
-      res.status(400).send('Room with that name already exists')
-      return
-    }
-
-    const player = await Player.findOne({ _id: ownerId })
-    if (!player) {
-      res.status(400).send('User not found')
-      return
-    }
-
-    try {
-      const room = await new Room({
-        name: roomName,
-        availableSeats,
-        owner: player,
-        players: [player],
-        howManyPlayers: 1,
-        gameTable: null,
-      })
-
-      const newGameTable = await new GameTable({
-        room,
-        isGameInProcess: false,
-      })
-
-      room.gameTable = newGameTable
-      player.owningRooms.push(room)
-      player.joinedRooms.push(room)
-
-      await player.save()
-      await newGameTable.save()
-      await room.save()
-      res.send(room)
     } catch (error) {
-      res.status(500).send(error.message)
+      next(error)
     }
   },
 
-  remove_room: async (req, res) => {
-    const { id } = req.params
-
-    const removeResponse = await Room.findByIdAndDelete(id)
-
-    if (isNil(removeResponse)) {
-      res.status(400).send('Room not found')
-    } else {
-      res.send({
-        removed: removeResponse,
-      })
-    }
-  },
-
-  join_room: async (req, res) => {
-    const { roomId, playerId } = req.body
-
-    const joinedRoom = await Room.findOne({ _id: roomId })
-    if (!joinedRoom) {
-      res.status(400).send('Room not found')
-      return
-    }
-    if (joinedRoom.players.includes(playerId)) {
-      res.status(409).send("You've already joined the room")
-    }
-
+  create_room: async (req, res, next) => {
     try {
-      const player = await Player.findOneAndUpdate(
+      const { name: roomName, availableSeats, ownerId } = req.body
+
+      const sameNameRoom = await Room.find({ name: roomName })
+      if (!isEmpty(sameNameRoom)) {
+        next(new ErrorHandler(400, 'Room with that name already exists'))
+      }
+
+    const player = await Player.findOne({ _id: ownerId }, (error) => {
+      if (error) {
+        next(new ErrorHandler(400, 'User not found'))
+      }
+    })
+
+    const room = new Room({
+      name: roomName,
+      availableSeats,
+      owner: player,
+      players: [player],
+      howManyPlayers: 1,
+      gameTable: null,
+    })
+
+    const newGameTable = new GameTable({
+      room,
+      isGameInProcess: false,
+    })
+
+    room.gameTable = newGameTable
+    player.owningRooms.push(room)
+    player.joinedRooms.push(room)
+
+    await player.save()
+    await newGameTable.save()
+    await room.save()
+    res.send(room)
+
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  remove_room: async (req, res, next) => {
+    try {
+      const { id } = req.params
+      await Room.findByIdAndDelete(id, (error, removedRoom) => {
+        if (error) {
+          next(new ErrorHandler(400, 'Room not found'))
+        }
+        res.send({ removed: removedRoom })
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  join_room: async (req, res, next) => {
+    try {
+      const { roomId, playerId } = req.body
+
+      const joinedRoom = await Room.findOne({ _id: roomId }, (error) => {
+        if (error) {
+          next(new ErrorHandler(400, 'Room not found'))
+        }
+      })
+
+      if (joinedRoom.players.includes(playerId)) {
+        next(new ErrorHandler(409, "You've already joined the room"))
+      }
+
+      const joinPlayer = await Player.findOneAndUpdate(
         { _id: playerId },
-        { $push: { joinedRooms: joinedRoom } }
+        { $push: { joinedRooms: joinedRoom } },
+        { new: true }
       )
 
-      await joinedRoom.players.push(player)
+      await joinedRoom.players.push(joinPlayer)
       await joinedRoom.save()
-      res.status(200).send('Success')
+      res.status(200).send({ player: joinPlayer })
+
     } catch (error) {
-      res.status(500).end(error.message)
+      next(error)
     }
   },
 
-  leave_room: async (req, res) => {
-    const { roomId, playerId } = req.body
-
-    const leftRoom = await Room.findOne({ _id: roomId })
-    if (!leftRoom) {
-      res.status(400).send('Room not found')
-      return
-    }
-    if (!leftRoom.players.includes(playerId)) {
-      res.status(409).send('Player is not in the room')
-    }
-
+  leave_room: async (req, res, next) => {
     try {
-      await Player.findOneAndUpdate(
-        { _id: playerId },
-        { $pull: { joinedRooms: roomId } }
-      )
+      const { roomId, playerId } = req.body
+
+      const leftRoom = await Room.findOne({ _id: roomId }, (error) => {
+        if (error) {
+          next(new ErrorHandler(400, 'Room not found'))
+        }
+      })
+
+      if (!leftRoom.players.includes(playerId)) {
+        next(new ErrorHandler(409, 'Player is not in the room'))
+      }
 
       await Room.findOneAndUpdate(
         { _id: roomId },
         { $pull: { players: playerId } }
       )
-      res.status(200).send('Success')
+
+      const leftPlayer = await Player.findOneAndUpdate(
+        { _id: playerId },
+        { $pull: { joinedRooms: roomId } },
+        { new: true }
+      )
+
+      res.status(200).send({ player: leftPlayer })
+
     } catch (error) {
-      res.status(500).send(error.message)
+      next(error)
     }
   },
 }

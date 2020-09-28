@@ -11,6 +11,7 @@ import room from './routes/room'
 import gameTable from './routes/gameTable'
 import game from './routes/game'
 import { API } from './constants/apiEndpoints'
+import { handleError } from './helpers/error'
 
 
 const app: Application = express()
@@ -31,10 +32,6 @@ app.use(API.PLAYERS, player)
 app.use(API.ROOMS, room)
 app.use(API.GAMES, game)
 
-app.use((req, res, next) => {
-  res.status(500).end()
-})
-
 const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
 )
@@ -42,3 +39,6 @@ const server = app.listen(PORT, () =>
 const gameSocket = new GameSocket(server)
 app.use(API.GAME_TABLE, gameTable(gameSocket))
 
+app.use((err, req, res, next) => {
+  handleError(err, res)
+})

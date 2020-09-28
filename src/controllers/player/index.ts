@@ -1,6 +1,7 @@
 import { isNil } from 'ramda'
 import Player from '../../models/Player'
-import { mapPlayerData } from '../../utils/apiResponseMapper'
+import { mapPlayerData } from '../../helpers/apiResponseMapper'
+import ErrorHandler from "../../helpers/error";
 
 
 const getUpdateModelData = (newNick: string, newPassword: string) => {
@@ -15,60 +16,57 @@ const getUpdateModelData = (newNick: string, newPassword: string) => {
 
 
 const playerControllers = {
-  get_player: async (req, res) => {
-    const { id } = req.params
+  get_player: async (req, res, next) => {
+    try {
+      const { id } = req.params
 
-    const player = await Player.findOne({ _id: id })
-      .populate('owningRooms')
-      .populate('joinedRooms')
+      const player = await Player.findOne({ _id: id }, (error) => {
+        if (error) {
+          next(new ErrorHandler(400, 'User not found'))
+        }
+      })
 
-    if (!player) {
-      res.status(400).send('User not found')
-      return
+      res.send({ player: mapPlayerData(player) })
+
+    } catch (error) {
+      next(error)
     }
-
-    const mappedPlayerData = mapPlayerData(player)
-
-    res.send({
-      player: mappedPlayerData
-    })
   },
 
-  get_podium_players: async (req, res) => {
+  get_podium_players: async (req, res, next) => {
     try {
       const podiumPlayers = await Player.find()
         .sort('level')
         .limit(3)
 
       res.send(podiumPlayers)
+
     } catch (error) {
-      res.status(400).send(error.message)
+      next(error)
     }
   },
 
-  change_player: async (req, res) => {
-    const { id, nick, password } = req.body
+  change_player: async (req, res, next) => {
+    try {
+      const { id, nick, password } = req.body
 
-    const updateModelObject = getUpdateModelData(nick, password)
+      const updateModelObject = getUpdateModelData(nick, password)
 
-    if (isNil(updateModelObject)) {
-      res.status(400).send('Nothing to update')
-      return
-    }
-
-    Player.findByIdAndUpdate(
-      id,
-      updateModelObject,
-      function (error) {
-        if (error) {
-          res.status(400).send('Update failed')
-        } else {
-          res.send('Data had been updated')
-        }
+      if (isNil(updateModelObject)) {
+        next(new ErrorHandler(400, 'Nothing to update'))
       }
-    )
-  },
 
+      Player.findByIdAndUpdate(id, updateModelObject, (error) => {
+        if (error) {
+          next(new ErrorHandler(400, 'Update failed'))
+        }
+        res.send('Data had been updated')
+      })
+
+    } catch (error) {
+      next(error)
+    }
+  },
 }
 
 export default playerControllers
