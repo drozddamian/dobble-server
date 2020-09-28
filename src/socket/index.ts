@@ -1,4 +1,4 @@
-import socketIo, { Socket } from 'socket.io'
+import SocketIO from 'socket.io'
 import GameTable, { IGameTable } from '../models/GameTable'
 import GameRound, {IGameRound} from '../models/GameRound'
 import Player from '../models/Player'
@@ -22,15 +22,15 @@ const {
 const ROUND_START_COUNTER = 3
 
 class GameSocket {
-  io: Socket;
+  io: SocketIO.Server;
   cards: PackOfCards;
   playerId: string;
   tableId: string;
 
   constructor(app) {
-    this.io = socketIo().listen(app)
-    this.initializeSocketConnection()
+    this.io = SocketIO().listen(app)
     this.cards = getCards()
+    this.initializeSocketConnection()
   }
 
 

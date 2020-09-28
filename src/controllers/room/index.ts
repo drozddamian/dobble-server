@@ -1,21 +1,23 @@
+import { Request, Response, NextFunction } from 'express'
+import { isEmpty } from 'ramda'
 import Room from '../../models/Room'
-import { isEmpty, isNil } from 'ramda'
 import Player from '../../models/Player'
 import GameTable from '../../models/GameTable'
 import { mapPaginationRooms } from '../../helpers/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
-import ErrorHandler from "../../helpers/error";
+import ErrorHandler from '../../helpers/error'
 
 
 
 const roomControllers = {
-  get_rooms: async (req, res, next) => {
+  get_rooms: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { chunkNumber = 1 } = req.query
+      const numberOfPagesToSkip = (Number(chunkNumber) - 1) * PAGINATION_CHUNK_SIZE
 
       const rooms = await Room.find()
         .limit(PAGINATION_CHUNK_SIZE)
-        .skip((chunkNumber - 1) * PAGINATION_CHUNK_SIZE)
+        .skip(numberOfPagesToSkip)
 
       const howManyRooms = await Room.countDocuments()
       const mappedRooms = mapPaginationRooms(rooms, Number(chunkNumber), howManyRooms)
@@ -26,7 +28,7 @@ const roomControllers = {
     }
   },
 
-  get_top_five_rooms: async (req, res, next) => {
+  get_top_five_rooms: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const topRooms = await Room.find({})
         .sort({ howManyPlayers: -1 })
@@ -41,7 +43,7 @@ const roomControllers = {
     }
   },
 
-  get_single_room: async (req, res, next) => {
+  get_single_room: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params
       const room = await Room.findOne({ _id: id }, (error) => {
@@ -59,7 +61,7 @@ const roomControllers = {
     }
   },
 
-  create_room: async (req, res, next) => {
+  create_room: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name: roomName, availableSeats, ownerId } = req.body
 
@@ -102,7 +104,7 @@ const roomControllers = {
     }
   },
 
-  remove_room: async (req, res, next) => {
+  remove_room: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params
       await Room.findByIdAndDelete(id, (error, removedRoom) => {
@@ -116,7 +118,7 @@ const roomControllers = {
     }
   },
 
-  join_room: async (req, res, next) => {
+  join_room: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { roomId, playerId } = req.body
 
@@ -145,7 +147,7 @@ const roomControllers = {
     }
   },
 
-  leave_room: async (req, res, next) => {
+  leave_room: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { roomId, playerId } = req.body
 

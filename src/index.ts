@@ -4,13 +4,13 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import AppConfig from './config'
+import errorMiddleware from './middleware/error'
 import GameSocket from './socket'
 import auth from './routes/auth'
 import player from './routes/player'
 import room from './routes/room'
 import gameTable from './routes/gameTable'
 import { API } from './constants/apiEndpoints'
-import { handleError } from './helpers/error'
 
 
 const app: Application = express()
@@ -37,6 +37,4 @@ const server = app.listen(PORT, () =>
 const gameSocket = new GameSocket(server)
 app.use(API.GAME_TABLE, gameTable(gameSocket))
 
-app.use((err, req, res, next) => {
-  handleError(err, res)
-})
+app.use(errorMiddleware)

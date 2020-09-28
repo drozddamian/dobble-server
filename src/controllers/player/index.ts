@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from 'express'
 import { isNil } from 'ramda'
 import Player from '../../models/Player'
 import { mapPlayerData } from '../../helpers/apiResponseMapper'
-import ErrorHandler from "../../helpers/error";
+import ErrorHandler from '../../helpers/error'
 
 
 const getUpdateModelData = (newNick: string, newPassword: string) => {
@@ -16,7 +17,7 @@ const getUpdateModelData = (newNick: string, newPassword: string) => {
 
 
 const playerControllers = {
-  get_player: async (req, res, next) => {
+  get_player: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params
 
@@ -33,7 +34,7 @@ const playerControllers = {
     }
   },
 
-  get_podium_players: async (req, res, next) => {
+  get_podium_players: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const podiumPlayers = await Player.find()
         .sort('level')
@@ -46,7 +47,7 @@ const playerControllers = {
     }
   },
 
-  change_player: async (req, res, next) => {
+  change_player: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id, nick, password } = req.body
 

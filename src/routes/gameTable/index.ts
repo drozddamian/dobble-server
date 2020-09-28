@@ -11,7 +11,7 @@ const {
 
 const gameTableRouter = (socketIo) => {
   return router
-    .get(API_METHODS.SINGLE_GAME_TABLE, get_game_table)
+    .get(API_METHODS.SINGLE_ITEM, get_game_table)
     .post(API_METHODS.ROOT, join_game_table(socketIo))
 }
 

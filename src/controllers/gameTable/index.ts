@@ -1,11 +1,12 @@
+import { Request, Response, NextFunction } from 'express'
 import GameTable from '../../models/GameTable'
 import GAME_SOCKET_ACTIONS from '../../constants/gameSocket'
-import ErrorHandler from "../../helpers/error";
+import ErrorHandler from '../../helpers/error'
 
 const { PLAYER_JOIN } = GAME_SOCKET_ACTIONS
 
 const gameTableControllers = {
-  get_game_table: async (req, res, next) => {
+  get_game_table: async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params
     const gameTable = await GameTable.findOne({ _id: id }, (error) => {
       if (error) {
@@ -15,7 +16,7 @@ const gameTableControllers = {
     res.send(gameTable)
   },
 
-  join_game_table: (socketIo) => async (req, res, next) => {
+  join_game_table: (socketIo) => async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { tableId, playerId } = req.body
       const gameTable = await GameTable.findOne({ _id: tableId })
