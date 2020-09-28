@@ -3,11 +3,9 @@ export enum API_METHODS {
   LOGIN = '/login',
   REGISTER = '/register',
   LOGOUT = '/logout',
-  SINGLE_PLAYER = '/:id',
+  SINGLE_ITEM = '/:id',
   PODIUM_PLAYERS = '/podium',
-  MOST_POPULAR_ROOMS = '/most_popular',
-  SINGLE_ROOM = '/:id',
   JOIN_ROOM = '/join_room',
   LEAVE_ROOM = '/leave_room',
-  SINGLE_GAME_TABLE = '/:id',
+  MOST_POPULAR_ROOMS = '/most_popular',
 }

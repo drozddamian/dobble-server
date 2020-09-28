@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { Request, Response, NextFunction } from 'express'
 import jwt, { Secret } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
@@ -8,7 +9,7 @@ import { AUTH_TOKEN, EXPERIENCE_TO_SECOND_LEVEL } from '../../constants'
 
 
 const authControllers = {
-  login: async (req, res, next) => {
+  login: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, password } = req.body
 
@@ -33,8 +34,7 @@ const authControllers = {
     }
   },
 
-
-  register: async (req, res, next) => {
+  register: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, nick, password } = req.body
 
@@ -66,8 +66,7 @@ const authControllers = {
     }
   },
 
-
-  logout: async (req, res, next) => {
+  logout: async (req: Request, res: Response, next: NextFunction) => {
     try {
       await res.removeHeader(AUTH_TOKEN)
       res.send('Logged out successful')

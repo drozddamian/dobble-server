@@ -4,14 +4,13 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import AppConfig from './config'
+import errorMiddleware from './middleware/error'
 import GameSocket from './socket'
 import auth from './routes/auth'
 import player from './routes/player'
 import room from './routes/room'
 import gameTable from './routes/gameTable'
-import game from './routes/game'
 import { API } from './constants/apiEndpoints'
-import { handleError } from './helpers/error'
 
 
 const app: Application = express()
@@ -30,7 +29,6 @@ mongoose.connect(MONGO_DB_URI, AppConfig.mongoose)
 app.use(API.AUTHENTICATION, auth)
 app.use(API.PLAYERS, player)
 app.use(API.ROOMS, room)
-app.use(API.GAMES, game)
 
 const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),
@@ -39,6 +37,4 @@ const server = app.listen(PORT, () =>
 const gameSocket = new GameSocket(server)
 app.use(API.GAME_TABLE, gameTable(gameSocket))
 
-app.use((err, req, res, next) => {
-  handleError(err, res)
-})
+app.use(errorMiddleware)

@@ -31,27 +31,6 @@ export const mapPlayerData = (player: IPlayer): MappedPlayer => {
   }
 }
 
-interface MappedRoom {
-  _id: string;
-  createdAt: Date;
-  owner: any;
-  players: IPlayer[];
-  availableSeats: 2 | 3 | 4 | 5 | 6;
-  howManyPlayers: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-}
-
-export const mapRoomData = (room: IRoom): MappedRoom => {
-  const { _id, createdAt, owner, players, availableSeats, howManyPlayers } = room
-  return {
-    _id,
-    createdAt,
-    owner,
-    players,
-    availableSeats,
-    howManyPlayers,
-  }
-}
-
 interface MappedRoomsPagination {
   rooms: IRoom[]
   chunkNumber: number;

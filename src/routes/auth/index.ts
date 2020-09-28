@@ -1,10 +1,14 @@
-import express from 'express'
+import express, { Router } from 'express'
 import authController from '../../controllers/auth'
 import { API_METHODS } from '../../constants/apiMethods'
 
-const router = express.Router()
+const router: Router = express.Router()
 
-const { login, register, logout } = authController
+const {
+  login,
+  register,
+  logout,
+} = authController
 
 router.post(API_METHODS.LOGIN, login)
 router.post(API_METHODS.REGISTER, register)
