@@ -9,7 +9,6 @@ import auth from './routes/auth'
 import player from './routes/player'
 import room from './routes/room'
 import gameTable from './routes/gameTable'
-import game from './routes/game'
 import { API } from './constants/apiEndpoints'
 import { handleError } from './helpers/error'
 
@@ -30,7 +29,6 @@ mongoose.connect(MONGO_DB_URI, AppConfig.mongoose)
 app.use(API.AUTHENTICATION, auth)
 app.use(API.PLAYERS, player)
 app.use(API.ROOMS, room)
-app.use(API.GAMES, game)
 
 const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`),

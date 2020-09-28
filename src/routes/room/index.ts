@@ -1,10 +1,18 @@
-import express from 'express'
+import express, { Router } from 'express'
 import roomController from '../../controllers/room'
 import { API_METHODS } from '../../constants/apiMethods'
 
-const router = express.Router()
+const router: Router = express.Router()
 
-const { get_rooms, get_single_room, get_top_five_rooms, create_room, remove_room, join_room, leave_room } = roomController
+const {
+  get_rooms,
+  get_single_room,
+  get_top_five_rooms,
+  create_room,
+  remove_room,
+  join_room,
+  leave_room,
+} = roomController
 
 router
   .get(API_METHODS.MOST_POPULAR_ROOMS, get_top_five_rooms)
