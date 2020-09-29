@@ -36,7 +36,7 @@
   "scripts": {
     "build": "tsc -p ./",
     "start": "node build/index.js",
-    "dev": "nodemon -x tsnd src/index.ts",
+    "run": "nodemon -x tsnd src/index.ts",
     "prod": "tsc && node ./build/index.js"
   },
   "engines": {
