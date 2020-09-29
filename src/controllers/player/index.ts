@@ -23,9 +23,11 @@ const playerControllers = {
 
       const player = await Player.findOne({ _id: id }, (error) => {
         if (error) {
-          next(new ErrorHandler(400, 'User not found'))
+          return next(new ErrorHandler(400, 'User not found'))
         }
       })
+      .populate('owningRooms')
+      .populate('joinedRooms');
 
       res.send({ player: mapPlayerData(player) })
 
@@ -54,12 +56,12 @@ const playerControllers = {
       const updateModelObject = getUpdateModelData(nick, password)
 
       if (isNil(updateModelObject)) {
-        next(new ErrorHandler(400, 'Nothing to update'))
+        return next(new ErrorHandler(400, 'Nothing to update'))
       }
 
       Player.findByIdAndUpdate(id, updateModelObject, (error) => {
         if (error) {
-          next(new ErrorHandler(400, 'Update failed'))
+          return next(new ErrorHandler(400, 'Update failed'))
         }
         res.send('Data had been updated')
       })

@@ -15,13 +15,13 @@ const authControllers = {
 
       const player = await Player.findOne({ username }, (error) => {
         if (error) {
-          next(new ErrorHandler(400, 'User not found'))
+          return next(new ErrorHandler(400, 'User not found'))
         }
       })
 
       const isValidPassword = await bcrypt.compare(password, player?.password)
       if (!isValidPassword) {
-        next(new ErrorHandler(400, 'Invalid password'))
+        return next(new ErrorHandler(400, 'Invalid password'))
       }
 
       const mappedPlayerData = mapPlayerData(player)
@@ -40,7 +40,7 @@ const authControllers = {
 
       await Player.findOne({ username }, (_, player) => {
         if (player) {
-         next(new ErrorHandler(409, 'Username already exists'))
+         return next(new ErrorHandler(409, 'Username already exists'))
         }
       })
 

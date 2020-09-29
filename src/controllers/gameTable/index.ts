@@ -10,7 +10,7 @@ const gameTableControllers = {
     const { id } = req.params
     const gameTable = await GameTable.findOne({ _id: id }, (error) => {
       if (error) {
-        next(new ErrorHandler(400, 'Game table not found'))
+        return next(new ErrorHandler(400, 'Game table not found'))
       }
     })
     res.send(gameTable)
@@ -22,7 +22,7 @@ const gameTableControllers = {
       const gameTable = await GameTable.findOne({ _id: tableId })
 
       if (gameTable.players.includes(playerId)) {
-        next(new ErrorHandler(409, 'User already exist in this game session'))
+        return next(new ErrorHandler(409, 'User already exist in this game session'))
       }
 
       gameTable.players = [...gameTable.players, playerId]

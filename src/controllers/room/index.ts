@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { isEmpty } from 'ramda'
+import { isNil } from 'ramda'
 import Room from '../../models/Room'
 import Player from '../../models/Player'
 import GameTable from '../../models/GameTable'
@@ -48,7 +48,7 @@ const roomControllers = {
       const { id } = req.params
       const room = await Room.findOne({ _id: id }, (error) => {
         if (error) {
-          next(new ErrorHandler(400, 'Room not found'))
+          return next(new ErrorHandler(400, 'Room not found'))
         }
       })
       .populate('owner')
@@ -65,14 +65,14 @@ const roomControllers = {
     try {
       const { name: roomName, availableSeats, ownerId } = req.body
 
-      const sameNameRoom = await Room.find({ name: roomName })
-      if (!isEmpty(sameNameRoom)) {
-        next(new ErrorHandler(400, 'Room with that name already exists'))
+      const sameNameRoom = await Room.findOne({ name: roomName })
+      if (!isNil(sameNameRoom)) {
+        return next(new ErrorHandler(400, 'Room with that name already exists'))
       }
 
     const player = await Player.findOne({ _id: ownerId }, (error) => {
       if (error) {
-        next(new ErrorHandler(400, 'User not found'))
+        return next(new ErrorHandler(400, 'User not found'))
       }
     })
 
@@ -86,7 +86,7 @@ const roomControllers = {
     })
 
     const newGameTable = new GameTable({
-      room,
+      room: { ...room },
       isGameInProcess: false,
     })
 
@@ -94,9 +94,9 @@ const roomControllers = {
     player.owningRooms.push(room)
     player.joinedRooms.push(room)
 
-    await player.save()
     await newGameTable.save()
     await room.save()
+    await player.save()
     res.send(room)
 
     } catch (error) {
@@ -109,7 +109,7 @@ const roomControllers = {
       const { id } = req.params
       await Room.findByIdAndDelete(id, (error, removedRoom) => {
         if (error) {
-          next(new ErrorHandler(400, 'Room not found'))
+          return next(new ErrorHandler(400, 'Room not found'))
         }
         res.send({ removed: removedRoom })
       })
@@ -124,12 +124,12 @@ const roomControllers = {
 
       const joinedRoom = await Room.findOne({ _id: roomId }, (error) => {
         if (error) {
-          next(new ErrorHandler(400, 'Room not found'))
+          return next(new ErrorHandler(400, 'Room not found'))
         }
       })
 
       if (joinedRoom.players.includes(playerId)) {
-        next(new ErrorHandler(409, "You've already joined the room"))
+        return next(new ErrorHandler(409, "You've already joined the room"))
       }
 
       const joinPlayer = await Player.findOneAndUpdate(
@@ -153,12 +153,12 @@ const roomControllers = {
 
       const leftRoom = await Room.findOne({ _id: roomId }, (error) => {
         if (error) {
-          next(new ErrorHandler(400, 'Room not found'))
+          return next(new ErrorHandler(400, 'Room not found'))
         }
       })
 
       if (!leftRoom.players.includes(playerId)) {
-        next(new ErrorHandler(409, 'Player is not in the room'))
+        return next(new ErrorHandler(409, 'Player is not in the room'))
       }
 
       await Room.findOneAndUpdate(
