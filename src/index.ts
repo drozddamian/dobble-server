@@ -36,5 +36,4 @@ const server = app.listen(PORT, () =>
 
 const gameSocket = new GameSocket(server)
 app.use(API.GAME_TABLE, gameTable(gameSocket))
-
 app.use(errorMiddleware)

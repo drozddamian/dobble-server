@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { isNil } from 'ramda'
 import { Request, Response, NextFunction } from 'express'
 import jwt, { Secret } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
@@ -13,24 +14,28 @@ const authControllers = {
     try {
       const { username, password } = req.body
 
-      const player = await Player.findOne({ username }, (error) => {
-        if (error) {
-          return next(new ErrorHandler(400, 'User not found'))
-        }
-      })
+      const player = await Player.findOne({ username: username })
 
-      const isValidPassword = await bcrypt.compare(password, player?.password)
+      if (isNil(player)) {
+        return next(new ErrorHandler(400, 'User not found'))
+      }
+
+      const isValidPassword = await bcrypt.compare(password, player.password)
       if (!isValidPassword) {
         return next(new ErrorHandler(400, 'Invalid password'))
       }
 
       const mappedPlayerData = mapPlayerData(player)
 
-      const token = jwt.sign({_id: player?._id}, process.env.JWT_SECRET as Secret)
-      await res.header(AUTH_TOKEN, token).send({player: mappedPlayerData, token})
+      const token = jwt.sign({ _id: player._id }, process.env.JWT_SECRET as Secret)
+
+      res.header(AUTH_TOKEN, token).send({
+        player: mappedPlayerData,
+        token
+      })
 
     } catch (error) {
-      next(error)
+      return next(error)
     }
   },
 

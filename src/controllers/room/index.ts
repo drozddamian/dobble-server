@@ -70,17 +70,16 @@ const roomControllers = {
         return next(new ErrorHandler(400, 'Room with that name already exists'))
       }
 
-    const player = await Player.findOne({ _id: ownerId }, (error) => {
-      if (error) {
-        return next(new ErrorHandler(400, 'User not found'))
-      }
-    })
+    const player = await Player.findOne({ _id: ownerId })
+    if (isNil(player)) {
+      return next(new ErrorHandler(400, 'User not found'))
+    }
 
     const room = new Room({
       name: roomName,
       availableSeats,
-      owner: player,
-      players: [player],
+      owner: ownerId,
+      players: [ownerId],
       howManyPlayers: 1,
       gameTable: null,
     })
@@ -100,6 +99,7 @@ const roomControllers = {
     res.send(room)
 
     } catch (error) {
+      console.log(error)
       next(error)
     }
   },
