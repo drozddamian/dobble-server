@@ -13,3 +13,5 @@ export function chunkArray<T> (array: T[], size: number): T[] {
 export function getExperienceByCardsLeft(howManyCardsLeft: number): number {
   return howManyCardsLeft === 1 ? EXP_FOR_WINNER : EXP_FOR_SPOTTER
 }
+
+export * from './updatePlayerExperience'

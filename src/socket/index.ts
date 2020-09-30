@@ -1,12 +1,16 @@
 import SocketIO from 'socket.io'
 import GameTable, { IGameTable } from '../models/GameTable'
-import GameRound, {IGameRound} from '../models/GameRound'
+import GameRound, { IGameRound } from '../models/GameRound'
 import Player from '../models/Player'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
 import { getCards } from '../helpers/cards'
 import { PackOfCards } from '../types'
 import { mapGameRoundData } from '../helpers/socketResponseMapper'
-import { chunkArray, getExperienceByCardsLeft } from '../helpers'
+import {
+  updatePlayerExperience,
+  chunkArray,
+  getExperienceByCardsLeft,
+} from '../helpers'
 
 
 const {
@@ -36,11 +40,7 @@ class GameSocket {
 
   async addExperienceToPlayer(playerId: string, howManyCardsLeft: number) {
     const experienceForSpotter = getExperienceByCardsLeft(howManyCardsLeft)
-
-    await Player.findOneAndUpdate(
-      { _id: playerId, },
-      { $inc: { experience: experienceForSpotter }}
-    )
+    await updatePlayerExperience(playerId, experienceForSpotter)
   }
 
   dispatchTableChange(gameTable) {
