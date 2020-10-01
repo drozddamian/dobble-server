@@ -6,7 +6,10 @@ import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
 import ErrorHandler from '../../helpers/error'
 import { mapPlayerData } from '../../helpers/apiResponseMapper'
-import { AUTH_TOKEN, EXPERIENCE_TO_SECOND_LEVEL } from '../../constants'
+import {
+  AUTH_TOKEN,
+  EXPERIENCE_TO_SECOND_LEVEL,
+} from '../../constants'
 
 
 const authControllers = {

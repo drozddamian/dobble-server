@@ -1,5 +1,5 @@
 class ErrorHandler extends Error {
-  statusCode: 400 | 401 | 404 | 409 | 500;
+  statusCode: 400 | 401 | 404 | 409 | 412 | 500;
   message: string;
 
   constructor(statusCode, message) {
