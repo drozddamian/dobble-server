@@ -18,7 +18,14 @@ router.post(
   validate,
   login,
 )
-router.post(API_METHODS.REGISTER, register)
+
+router.post(
+  API_METHODS.REGISTER,
+  validationSchema.register,
+  validate,
+  register,
+)
+
 router.post(API_METHODS.LOGOUT, logout)
 
 
