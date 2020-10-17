@@ -1,18 +1,17 @@
 import express, { Router } from 'express'
 import playerController from '../../controllers/player'
 import { API_METHODS } from '../../constants/apiMethods'
+import auth from '../../middleware/auth'
 
 const router: Router = express.Router()
 
 const {
   get_player,
-  get_podium_players,
   change_player,
 } = playerController
 
 router
-  .get(API_METHODS.SINGLE_ITEM, get_player)
-  .get(API_METHODS.PODIUM_PLAYERS, get_podium_players)
-  .put(API_METHODS.SINGLE_ITEM, change_player)
+  .get(API_METHODS.SINGLE_ITEM, auth, get_player)
+  .put(API_METHODS.SINGLE_ITEM, auth, change_player)
 
 export default router

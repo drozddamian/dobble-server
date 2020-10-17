@@ -99,7 +99,6 @@ const roomControllers = {
     res.send(room)
 
     } catch (error) {
-      console.log(error)
       next(error)
     }
   },
@@ -111,7 +110,7 @@ const roomControllers = {
         if (error) {
           return next(new ErrorHandler(400, 'Room not found'))
         }
-        res.send({ removed: removedRoom })
+        res.send(removedRoom)
       })
     } catch (error) {
       next(error)
@@ -140,8 +139,8 @@ const roomControllers = {
 
       await joinedRoom.players.push(joinPlayer)
       await joinedRoom.save()
-      res.status(200).send({ player: joinPlayer })
 
+      res.send(joinPlayer)
     } catch (error) {
       next(error)
     }
@@ -172,7 +171,7 @@ const roomControllers = {
         { new: true }
       )
 
-      res.status(200).send({ player: leftPlayer })
+      res.send(leftPlayer)
 
     } catch (error) {
       next(error)
