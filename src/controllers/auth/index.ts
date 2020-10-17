@@ -32,9 +32,9 @@ const authControllers = {
 
       const token = jwt.sign({ _id: player._id }, process.env.JWT_SECRET as Secret)
 
-      res.header(AUTH_TOKEN, token).send({
+      res.send({
         player: mappedPlayerData,
-        token
+        token,
       })
 
     } catch (error) {
@@ -65,9 +65,13 @@ const authControllers = {
       })
 
       const savedPlayer = await player.save()
+      const token = jwt.sign({ _id: savedPlayer._id }, process.env.JWT_SECRET as Secret)
       const mappedPlayerData = mapPlayerData(savedPlayer)
 
-      res.send({ player: mappedPlayerData })
+      res.send({
+        player: mappedPlayerData,
+        token,
+      })
 
     } catch (error) {
       next(error)

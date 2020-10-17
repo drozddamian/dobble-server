@@ -3,5 +3,4 @@ export enum API {
   PLAYERS = '/api/players',
   ROOMS = '/api/rooms',
   GAME_TABLE = '/api/game_table',
-  GAMES = 'api/games',
 }
