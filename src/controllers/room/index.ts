@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { isNil } from 'ramda'
 import Room from '../../models/Room'
 import Player from '../../models/Player'
-import GameTable from '../../models/GameTable'
+import GameTable, {GameTableStatus} from '../../models/GameTable'
 import { mapPaginationRooms } from '../../helpers/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
 import ErrorHandler from '../../helpers/error'
@@ -86,7 +86,7 @@ const roomControllers = {
 
     const newGameTable = new GameTable({
       room: { ...room },
-      isGameInProcess: false,
+      GameTableStatus: GameTableStatus.Joining,
     })
 
     room.gameTable = newGameTable
