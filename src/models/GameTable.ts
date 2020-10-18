@@ -5,15 +5,26 @@ import { IPlayer } from './Player'
 import { IRoom } from './Room'
 
 
+export enum GameTableStatus {
+  Joining = "JOINING",
+  Waiting = "WAITING",
+  Countdown = "COUNTDOWN",
+  Processing = "PROCESSING",
+}
+
 export interface IGameTable extends Document {
-  isGameInProcess: Boolean;
+  gameStatus: GameTableStatus;
   roundStartCountdown: number;
   room: IRoom;
   players: IPlayer[];
 }
 
 const GameTableSchema = new Schema({
-  isGameInProcess: Boolean,
+  gameStatus: {
+    type: String,
+    enum: ["JOINING", "WAITING", "COUNTDOWN", "PROCESSING"],
+    default: "JOINING",
+  },
   roundStartCountdown: Number,
   room: {
     type: Schema.Types.ObjectId,
