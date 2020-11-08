@@ -21,12 +21,10 @@ const gameTableControllers = {
       const { tableId, playerId } = req.body
       const gameTable = await GameTable.findOne({ _id: tableId })
 
-      if (gameTable.players.includes(playerId)) {
-        return next(new ErrorHandler(409, 'User already exist in this game session'))
+      if (!gameTable.players.includes(playerId)) {
+        gameTable.players = [...gameTable.players, playerId]
+        await gameTable.save()
       }
-
-      gameTable.players = [...gameTable.players, playerId]
-      await gameTable.save()
 
       socketIo.io.emit(PLAYER_JOIN, gameTable.players)
       res.send(gameTable)

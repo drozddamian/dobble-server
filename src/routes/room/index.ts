@@ -1,6 +1,9 @@
 import express, { Router } from 'express'
 import roomController from '../../controllers/room'
 import { API_METHODS } from '../../constants/apiMethods'
+import validate from '../../helpers/validate'
+import validationSchema from '../../validation'
+import auth from '../../middleware/auth'
 
 const router: Router = express.Router()
 
@@ -15,13 +18,18 @@ const {
 } = roomController
 
 router
+  .post(
+    API_METHODS.ROOT,
+    validationSchema.createRoom,
+    validate,
+    create_room,
+  )
   .get(API_METHODS.MOST_POPULAR_ROOMS, get_top_five_rooms)
   .get(API_METHODS.ROOT, get_rooms)
   .get(API_METHODS.SINGLE_ITEM, get_single_room)
-  .post(API_METHODS.ROOT, create_room)
-  .post(API_METHODS.JOIN_ROOM, join_room)
-  .post(API_METHODS.LEAVE_ROOM, leave_room)
-  .delete(API_METHODS.SINGLE_ITEM, remove_room)
+  .post(API_METHODS.JOIN_ROOM, auth, join_room)
+  .post(API_METHODS.LEAVE_ROOM, auth, leave_room)
+  .delete(API_METHODS.SINGLE_ITEM, auth, remove_room)
 
 
 export default router

@@ -26,7 +26,7 @@ const PlayerSchema = new Schema({
     type: String,
     required: true,
     minLength: 6,
-    maxLength: 255,
+    maxLength: 25,
   },
   nick: {
     type: String,
