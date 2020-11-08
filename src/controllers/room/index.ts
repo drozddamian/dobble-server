@@ -121,24 +121,31 @@ const roomControllers = {
     try {
       const { roomId, playerId } = req.body
 
-      const joinedRoom = await Room.findOne({ _id: roomId }, (error) => {
+      const roomToJoin = await Room.findOne({ _id: roomId }, (error) => {
         if (error) {
           return next(new ErrorHandler(400, 'Room not found'))
         }
       })
 
-      if (joinedRoom.players.includes(playerId)) {
+      const { howManyPlayers, availableSeats, players } = roomToJoin
+
+      if (howManyPlayers === availableSeats) {
+        return next(new ErrorHandler(409, "No seats available"))
+      }
+
+      if (players.includes(playerId)) {
         return next(new ErrorHandler(409, "You've already joined the room"))
       }
 
       const joinPlayer = await Player.findOneAndUpdate(
         { _id: playerId },
-        { $push: { joinedRooms: joinedRoom } },
+        { $push: { joinedRooms: roomToJoin } },
         { new: true }
       )
 
-      await joinedRoom.players.push(joinPlayer)
-      await joinedRoom.save()
+      roomToJoin.players.push(joinPlayer)
+      roomToJoin.howManyPlayers = roomToJoin.players.length
+      await roomToJoin.save()
 
       res.send(joinPlayer)
     } catch (error) {

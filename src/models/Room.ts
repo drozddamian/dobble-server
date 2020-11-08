@@ -12,7 +12,7 @@ export interface IRoom extends Document {
   owner: IPlayer[];
   players?: IPlayer[];
   gameTable: IGameTable;
-  howManyPlayers: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  howManyPlayers: number;
   createdAt: Date;
 }
 
@@ -46,7 +46,9 @@ const RoomSchema = new Schema({
   }],
   howManyPlayers: {
     type: Number,
+    min: 0,
     max: 6,
+    default: 0,
   },
   createdAt: {
     type: Date,

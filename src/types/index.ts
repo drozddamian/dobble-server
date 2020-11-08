@@ -1,3 +1,4 @@
+
 type CARD_SYMBOL = 'ANCHOR' | 'APPLE' | 'BABY_BOTTLE' | 'BOMB' | 'CACTUS' | 'CANDLE' | 'CARROT' | 'CHEESE' | 'CHESS_KNIGHT' |
     'CLOCK' | 'CLOWN' | 'CROSSHAIR' | 'DIASY_FLOWER' | 'DINOSAUR' | 'DOG' | 'DOLPHIN' | 'DRAGON' | 'EXCLAMATION_MARK' | 'EYE' | 'FIRE' |
     'FOUR_LEAF_CLOVER' | 'GHOST' | 'GREEN_SPLATS' | 'HAMMER' | 'HEART' | 'ICE_CUBE' | 'IGLOO' | 'KEY' | 'LADYBIRD' | 'LIGHT_BULB' |
@@ -8,3 +9,9 @@ type CARD_SYMBOL = 'ANCHOR' | 'APPLE' | 'BABY_BOTTLE' | 'BOMB' | 'CACTUS' | 'CAN
 export type PackOfCards = Array<CARD_SYMBOL[]>
 
 export type Card = CARD_SYMBOL[]
+
+type PlayerCards = {
+  cards: Card,
+  numberOfCardsLeft: number,
+}
+export type CardsByPlayer = {[id: string]: PlayerCards}
