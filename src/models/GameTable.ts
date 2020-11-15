@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose, { Types, Document } from 'mongoose'
 const Schema = mongoose.Schema
 import { IPlayer } from './Player'
 import { IRoom } from './Room'
@@ -15,6 +15,7 @@ export interface IGameTable extends Document {
   gameStatus: GameTableStatus;
   roundStartCountdown: number;
   room: IRoom;
+  roundId: Types.ObjectId;
   players: IPlayer[];
 }
 
@@ -31,6 +32,10 @@ const GameTableSchema = new Schema({
   room: {
     type: Schema.Types.ObjectId,
     ref: 'Room',
+  },
+  roundId: {
+    type: Schema.Types.ObjectId,
+    ref: 'GameRound',
   },
   players: [{
     type: Schema.Types.ObjectId,

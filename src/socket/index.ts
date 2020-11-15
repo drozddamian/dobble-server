@@ -1,13 +1,14 @@
 import SocketIO from 'socket.io'
-import { equals } from 'ramda'
+import { Types } from 'mongoose'
+import {equals} from 'ramda'
 import GameTable, {GameTableStatus, IGameTable} from '../models/GameTable'
 import GameRound, {IGameRound} from '../models/GameRound'
 import Player, {IPlayer} from '../models/Player'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
-import { getCards } from '../helpers/cards'
+import {getCards} from '../helpers/cards'
 import {Card, CardsByPlayer, PackOfCards} from '../types'
-import { mapGameRoundData } from '../helpers/socketResponseMapper'
-import { chunkArray, getExperienceByCardsLeft, updatePlayerExperience } from '../helpers'
+import {mapGameRoundData} from '../helpers/socketResponseMapper'
+import {chunkArray, getExperienceByCardsLeft, updatePlayerExperience} from '../helpers'
 
 
 const { Joining, Waiting, Countdown, Processing } = GameTableStatus
@@ -40,6 +41,14 @@ class GameSocket {
   }
 
 
+  async getPlayerNick(playerId?: string): Promise<string | null> {
+    if (!playerId) {
+      return null
+    }
+    const { nick } = await Player.findOne({ _id: playerId })
+    return nick
+  }
+
   async addExperienceToPlayer(playerId: string, howManyCardsLeft: number): Promise<void> {
     const experienceForSpotter = getExperienceByCardsLeft(howManyCardsLeft)
     await updatePlayerExperience(playerId, experienceForSpotter)
@@ -55,14 +64,16 @@ class GameSocket {
     this.io.emit(GAME_CHANGE, mapGameRoundData(gameRound))
   }
 
-  async dispatchGameEnd(playerId: string, tableId: string): Promise<void> {
-    const { nick } = await Player.findOne({ _id: playerId })
+  async dispatchGameEnd(tableId: string, playerId?: string): Promise<void> {
+    const nick = this.getPlayerNick(playerId)
 
     const updatedTable = await GameTable.findOneAndUpdate(
       { _id: tableId },
-      { gameStatus: Waiting, roundStartCountdown: ROUND_START_COUNTER },
+      { gameStatus: Waiting, roundStartCountdown: ROUND_START_COUNTER, roundId: null },
       { 'new': true }
     )
+
+    await GameRound.findOneAndDelete({ tableId })
 
     this.dispatchTableChange(updatedTable)
     this.io.emit(GAME_END, { winner: nick })
@@ -94,7 +105,8 @@ class GameSocket {
 
     const newGameRound = new GameRound({
       gameStatus: Processing,
-      players,
+      tableId,
+      playersId: players,
       centerCard,
       cardsByPlayer,
       spotterId: null,
@@ -103,7 +115,10 @@ class GameSocket {
 
     const updatedGameTable = await GameTable.findOneAndUpdate(
       { _id: tableId },
-      { $set: { gameStatus: Processing } },
+      { $set: {
+        roundId: Types.ObjectId(newGameRound._id),
+        gameStatus: Processing,
+      }},
       { 'new': true }
     )
 
@@ -120,6 +135,15 @@ class GameSocket {
         { $addToSet: { players: player } },
         { 'new': true }
       )
+
+      if (equals(updatedGameTable.gameStatus, Processing)) {
+        const gameRound = await GameRound.findOne({ tableId })
+
+        if (gameRound.playersId.includes(playerId)) {
+          this.dispatchGameChange(gameRound)
+        }
+      }
+
       this.dispatchTableChange(updatedGameTable)
     } catch (error) {
       this.io.emit(GAME_ERROR, 'ERROR WHILE JOINING THE TABLE')
@@ -173,23 +197,26 @@ class GameSocket {
     }, 1000)
   }
 
-  async spotShape(tableId: string, roundId: string, playerId: string): Promise<void> {
+  async spotShape(tableId: string, playerId: string): Promise<void> {
     try {
-      const { cardsByPlayer } = await GameRound.findOne({ _id: roundId })
+      const { cardsByPlayer } = await GameRound.findOne({
+        tableId: Types.ObjectId(tableId)
+      })
+
       const newCenterCard = cardsByPlayer[playerId].cards.pop()
       const playerCards = cardsByPlayer[playerId].cards
       const howManyCardsLeft = playerCards.length - 1
       cardsByPlayer[playerId].numberOfCardsLeft = howManyCardsLeft
 
       const gameRound: IGameRound = await GameRound.findOneAndUpdate(
-          { _id: roundId },
-          { spotterId: playerId, centerCard: newCenterCard, cardsByPlayer },
-          { 'new': true }
+        { tableId: Types.ObjectId(tableId) },
+        { spotterId: playerId, centerCard: newCenterCard, cardsByPlayer },
+        { 'new': true }
       )
 
       await this.dispatchGameChange(gameRound)
       await this.addExperienceToPlayer(playerId, playerCards.length)
-      howManyCardsLeft === 0 && await this.dispatchGameEnd(playerId, tableId)
+      howManyCardsLeft === 0 && await this.dispatchGameEnd(tableId, playerId)
 
     } catch (error) {
       this.io.emit(GAME_ERROR, error.message)
@@ -200,7 +227,7 @@ class GameSocket {
     try {
       const updatedGame = await GameTable.findOneAndUpdate(
         { _id: tableId },
-        { $pull: { players: playerId }},
+        { $pull: { players: playerId } },
         { 'new': true }
       )
       this.dispatchTableChange(updatedGame)
@@ -209,7 +236,7 @@ class GameSocket {
     }
   }
 
-  initializeSocketConnection() {
+  initializeSocketConnection(): void {
     this.io.on('connection', async (socket) => {
       socket.on('join', async (connectionData) => {
         const { gameTableId, playerId } = connectionData
@@ -219,11 +246,8 @@ class GameSocket {
 
       socket.on(PLAYER_LEAVE, async ({ playerId, tableId }) => await this.playerLeave(playerId, tableId))
       socket.on(ROUND_START, async ({ tableId }) => await this.roundStart(tableId))
-      socket.on(SPOT_SHAPE, async ({ tableId, roundId, playerId }) => await this.spotShape(tableId, roundId, playerId))
-
-      socket.on('disconnect', () => {
-        //this.playerLeave(this.playerId, this.tableId)
-      })
+      socket.on(SPOT_SHAPE, async ({ tableId, playerId }) => await this.spotShape(tableId, playerId))
+      socket.on(GAME_END, async ({ tableId, playerId }) => await this.dispatchGameEnd(tableId, playerId))
     })
   }
 }

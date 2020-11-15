@@ -1,3 +1,4 @@
+import { Types } from 'mongoose'
 import { last, isNil } from 'ramda'
 import { IGameRound, CardsByPlayerCollection } from '../models/GameRound'
 import { Card } from '../types'
@@ -18,6 +19,7 @@ type CardsByPlayerId = {
 
 interface MappedGameRound {
   id: string;
+  tableId: Types.ObjectId;
   isGameRoundInProcess: boolean;
   spotterId: string;
   centerCard: Card;
@@ -26,12 +28,12 @@ interface MappedGameRound {
 }
 
 export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
-  const { _id, isGameRoundInProcess, centerCard, cardsByPlayer, spotterId } = newGameRound
+  const { _id, isGameRoundInProcess, centerCard, cardsByPlayer, spotterId, tableId } = newGameRound
 
   const experienceForSpotter = getExperienceForSpotter(cardsByPlayer, spotterId)
 
   const playersInRound = Object.keys(cardsByPlayer)
-  let cardsByPlayerId = {}
+  const cardsByPlayerId = {}
 
   playersInRound.forEach((playerId) => {
     const { cards } = cardsByPlayer[playerId]
@@ -41,6 +43,7 @@ export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
 
   return {
     id: _id,
+    tableId,
     isGameRoundInProcess,
     spotterId,
     centerCard,
