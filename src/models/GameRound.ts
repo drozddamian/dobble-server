@@ -1,6 +1,5 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose, { Types, Document } from 'mongoose'
 const Schema = mongoose.Schema
-import Player from './Player'
 import {
   Card,
   PackOfCards,
@@ -22,6 +21,7 @@ export interface IGameRound extends Document {
   centerCard: Card | null;
   spotterId: string;
   cardsByPlayer: CardsByPlayerCollection;
+  tableId: Types.ObjectId;
   playersId: string[];
 }
 
@@ -29,6 +29,10 @@ const GameRoundSchema = new Schema({
   isGameRoundInProcess: Boolean,
   centerCard: [],
   cardsByPlayer: {},
+  tableId: {
+    type: Schema.Types.ObjectId,
+    ref: 'GameTable',
+  },
   spotterId: {
     type: Schema.Types.ObjectId,
     ref: 'Player',
