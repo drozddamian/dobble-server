@@ -3,7 +3,7 @@ import { last, isNil } from 'ramda'
 import { IGameRound, CardsByPlayerCollection } from '../models/GameRound'
 import { Card } from '../types'
 import { getExperienceByCardsLeft } from './index'
-import {IPlayer} from "../models/Player";
+import { IPlayer } from '../models/Player'
 
 
 function getExperienceForSpotter(cardsByPlayer: CardsByPlayerCollection, spotterId: string | null): number {
@@ -15,7 +15,10 @@ function getExperienceForSpotter(cardsByPlayer: CardsByPlayerCollection, spotter
 
 
 type CardsByPlayerId = {
-  [id: string]: Card;
+  [id: string]: {
+    card: Card;
+    howManyCardsLeft: number;
+  };
 }
 
 interface MappedGameRound {
@@ -35,11 +38,14 @@ export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
   const experienceForSpotter = getExperienceForSpotter(cardsByPlayer, spotterId)
 
   const playersInRound = Object.keys(cardsByPlayer)
-  const cardsByPlayerId = {}
+  const cardsByPlayerId: CardsByPlayerId = {}
 
   playersInRound.forEach((playerId) => {
     const { cards } = cardsByPlayer[playerId]
-    cardsByPlayerId[playerId] = last(cards)
+    cardsByPlayerId[playerId] = {
+      card: last(cards),
+      howManyCardsLeft: cards.length,
+    }
   })
 
 
