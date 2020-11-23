@@ -1,5 +1,6 @@
 import mongoose, { Types, Document } from 'mongoose'
 const Schema = mongoose.Schema
+import autopopulate from "mongoose-autopopulate"
 import { IPlayer } from './Player'
 import { IRoom } from './Room'
 import { tableStatusUpdate } from './modelsMiddleware/gameTableChange'
@@ -40,10 +41,12 @@ const GameTableSchema = new Schema({
   players: [{
     type: Schema.Types.ObjectId,
     ref: 'Player',
+    autopopulate: true,
   }],
 })
 
 GameTableSchema.post('findOneAndUpdate', tableStatusUpdate)
+GameTableSchema.plugin(autopopulate)
 const GameTableModel = mongoose.model<IGameTable>('GameTable', GameTableSchema)
 
 export default GameTableModel

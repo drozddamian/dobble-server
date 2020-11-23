@@ -1,5 +1,7 @@
 import mongoose, { Types, Document } from 'mongoose'
 const Schema = mongoose.Schema
+import autopopulate from "mongoose-autopopulate"
+import { IPlayer } from './Player'
 import {
   Card,
   PackOfCards,
@@ -22,7 +24,7 @@ export interface IGameRound extends Document {
   spotterId: string;
   cardsByPlayer: CardsByPlayerCollection;
   tableId: Types.ObjectId;
-  playersId: string[];
+  players: IPlayer[];
 }
 
 const GameRoundSchema = new Schema({
@@ -37,11 +39,14 @@ const GameRoundSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Player',
   },
-  playersId: [{
+  players: [{
     type: Schema.Types.ObjectId,
     ref: 'Player',
+    autopopulate: true,
   }],
 })
+
+GameRoundSchema.plugin(autopopulate)
 
 const GameRound = mongoose.model<IGameRound>('GameRound', GameRoundSchema)
 
