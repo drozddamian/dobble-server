@@ -3,6 +3,7 @@ import { last, isNil } from 'ramda'
 import { IGameRound, CardsByPlayerCollection } from '../models/GameRound'
 import { Card } from '../types'
 import { getExperienceByCardsLeft } from './index'
+import {IPlayer} from "../models/Player";
 
 
 function getExperienceForSpotter(cardsByPlayer: CardsByPlayerCollection, spotterId: string | null): number {
@@ -25,10 +26,11 @@ interface MappedGameRound {
   centerCard: Card;
   experienceForSpotter: number;
   cardsByPlayerId: CardsByPlayerId;
+  players: IPlayer[];
 }
 
 export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
-  const { _id, isGameRoundInProcess, centerCard, cardsByPlayer, spotterId, tableId } = newGameRound
+  const { _id, isGameRoundInProcess, centerCard, players, cardsByPlayer, spotterId, tableId } = newGameRound
 
   const experienceForSpotter = getExperienceForSpotter(cardsByPlayer, spotterId)
 
@@ -49,5 +51,6 @@ export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
     centerCard,
     experienceForSpotter,
     cardsByPlayerId,
+    players,
   }
 }
