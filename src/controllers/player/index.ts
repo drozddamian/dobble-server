@@ -17,7 +17,7 @@ const getUpdateModelData = (newNick: string, newPassword: string) => {
 
 
 const playerControllers = {
-  get_player: async (req: Request, res: Response, next: NextFunction) => {
+  get_player: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const {id} = req.params
 
@@ -29,14 +29,14 @@ const playerControllers = {
           .populate('owningRooms')
           .populate('joinedRooms');
 
-      res.send({player: mapPlayerData(player)})
+      res.send({ player: mapPlayerData(player) })
 
     } catch (error) {
       next(error)
     }
   },
 
-  change_player: async (req: Request, res: Response, next: NextFunction) => {
+  change_player: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id, nick, password } = req.body
 

@@ -18,7 +18,6 @@ export type CardsByPlayerCollection = {
 }
 
 export interface IGameRound extends Document {
-  _id: string;
   isGameRoundInProcess: boolean;
   centerCard: Card | null;
   spotterId: string;

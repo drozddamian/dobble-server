@@ -6,7 +6,7 @@ import ErrorHandler from '../../helpers/error'
 
 
 const gameTableControllers = {
-  get_game_table: async (req: Request, res: Response, next: NextFunction) => {
+  get_game_table: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params
     const gameTable = await GameTable.findOne({ _id: id }, (error) => {
       if (error) {

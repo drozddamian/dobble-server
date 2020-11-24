@@ -9,7 +9,7 @@ export interface IPlayer extends Document {
   level: number;
   experience: number;
   experienceToNextLevel: number;
-  wonGames: number;
+  durationsOfWin: string[];
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
 }
@@ -45,6 +45,7 @@ const PlayerSchema = new Schema({
     required: true,
     min: 0,
   },
+  durationsOfWin: [{ type: String }],
   experienceToNextLevel: {
     type: Number,
     required: true,

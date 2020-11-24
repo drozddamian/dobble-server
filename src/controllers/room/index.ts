@@ -10,7 +10,7 @@ import ErrorHandler from '../../helpers/error'
 
 
 const roomControllers = {
-  get_rooms: async (req: Request, res: Response, next: NextFunction) => {
+  get_rooms: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { chunkNumber = 1 } = req.query
       const numberOfPagesToSkip = (Number(chunkNumber) - 1) * PAGINATION_CHUNK_SIZE
@@ -28,7 +28,7 @@ const roomControllers = {
     }
   },
 
-  get_top_five_rooms: async (req: Request, res: Response, next: NextFunction) => {
+  get_top_five_rooms: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const topRooms = await Room.find({})
         .sort({ howManyPlayers: -1 })
@@ -43,7 +43,7 @@ const roomControllers = {
     }
   },
 
-  get_single_room: async (req: Request, res: Response, next: NextFunction) => {
+  get_single_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params
       const room = await Room.findOne({ _id: id }, (error) => {
@@ -61,7 +61,7 @@ const roomControllers = {
     }
   },
 
-  create_room: async (req: Request, res: Response, next: NextFunction) => {
+  create_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { name: roomName, availableSeats, ownerId } = req.body
 
@@ -103,7 +103,7 @@ const roomControllers = {
     }
   },
 
-  remove_room: async (req: Request, res: Response, next: NextFunction) => {
+  remove_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params
       await Room.findByIdAndDelete(id, (error, removedRoom) => {
@@ -117,7 +117,7 @@ const roomControllers = {
     }
   },
 
-  join_room: async (req: Request, res: Response, next: NextFunction) => {
+  join_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { roomId, playerId } = req.body
 
@@ -153,7 +153,7 @@ const roomControllers = {
     }
   },
 
-  leave_room: async (req: Request, res: Response, next: NextFunction) => {
+  leave_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { roomId, playerId } = req.body
 

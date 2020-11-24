@@ -13,7 +13,7 @@ import {
 
 
 const authControllers = {
-  login: async (req: Request, res: Response, next: NextFunction) => {
+  login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { username, password } = req.body
 
@@ -42,7 +42,7 @@ const authControllers = {
     }
   },
 
-  register: async (req: Request, res: Response, next: NextFunction) => {
+  register: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { username, nick, password } = req.body
 
@@ -78,7 +78,7 @@ const authControllers = {
     }
   },
 
-  logout: async (req: Request, res: Response, next: NextFunction) => {
+  logout: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await res.removeHeader(AUTH_TOKEN)
       res.send('Logged out successful')
