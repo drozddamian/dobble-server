@@ -1,4 +1,4 @@
-import { IPlayer } from '../models/Player'
+import { IPlayer, WinGame } from '../models/Player'
 import { IRoom } from '../models/Room'
 import { PAGINATION_CHUNK_SIZE } from '../constants'
 
@@ -12,11 +12,11 @@ interface MappedPlayer {
   percentToNextLevel: number;
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
-  durationsOfWin: string[];
+  winGames: WinGame[];
 }
 
 export const mapPlayerData = (player: IPlayer): MappedPlayer => {
-  const { _id, username, nick, level, experience, experienceToNextLevel, owningRooms, durationsOfWin, joinedRooms} = player
+  const { _id, username, nick, level, experience, experienceToNextLevel, owningRooms, winGames, joinedRooms} = player
 
   const percentToNextLevel = Math.floor((experience * 100) / experienceToNextLevel)
   return {
@@ -29,7 +29,7 @@ export const mapPlayerData = (player: IPlayer): MappedPlayer => {
     percentToNextLevel,
     owningRooms,
     joinedRooms,
-    durationsOfWin,
+    winGames,
   }
 }
 

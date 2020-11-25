@@ -11,7 +11,7 @@ const {
 } = playerController
 
 router
-  .get(API_METHODS.SINGLE_ITEM, auth, get_player)
+  .get(API_METHODS.SINGLE_ITEM, get_player)
   .put(API_METHODS.SINGLE_ITEM, auth, change_player)
 
 export default router

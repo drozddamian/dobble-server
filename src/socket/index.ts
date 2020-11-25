@@ -4,10 +4,10 @@ import { Types } from 'mongoose'
 import { equals } from 'ramda'
 import GameTable, {GameTableStatus, IGameTable} from '../models/GameTable'
 import GameRound, {IGameRound} from '../models/GameRound'
-import Player, {IPlayer} from '../models/Player'
+import Player, { IPlayer, WinGame } from '../models/Player'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
 import {getCards} from '../helpers/cards'
-import {Card, CardsByPlayer, PackOfCards} from '../types'
+import { Card, CardsByPlayer } from '../types'
 import {mapGameRoundData} from '../helpers/socketResponseMapper'
 import {chunkArray, getExperienceByCardsLeft, updatePlayerExperience} from '../helpers'
 
@@ -33,21 +33,23 @@ const ROUND_START_COUNTER = 3
 
 class GameSocket {
   io: SocketIO.Server;
-  cards: PackOfCards;
 
   constructor(app) {
     this.io = SocketIO().listen(80)
-    this.cards = getCards()
     this.initializeSocketConnection()
   }
 
-  async getDurationOfRound(tableId: string): Promise<string> {
+  async getWinData(tableId: string): Promise<WinGame> {
     try {
       const gameFinishDate = dayjs()
       const { _id } = await GameRound.findOne({ tableId: tableId })
+      const roundStartTimestamp = _id.getTimestamp()
       const roundStartDate = dayjs(_id.getTimestamp())
 
-      return gameFinishDate.diff(roundStartDate, 'second').toString()
+      return {
+        timestamp: roundStartTimestamp,
+        durationOfGame: gameFinishDate.diff(roundStartDate, 'second').toString()
+      }
     } catch (error) {
       console.log(error)
     }
@@ -71,9 +73,9 @@ class GameSocket {
 
   async dispatchGameEnd(tableId: string, playerId: string): Promise<void> {
     try {
-      const durationOfRound = await this.getDurationOfRound(tableId)
+      const winData = await this.getWinData(tableId)
       const winner = await Player.findOne({ _id: playerId })
-      winner.durationsOfWin.push(durationOfRound)
+      winner.winGames.push(winData)
       winner.save()
 
       this.io.emit(GAME_END, { winner: winner.nick })
@@ -93,9 +95,10 @@ class GameSocket {
   }
 
   getFirstDealCards(players: IPlayer[]): FirstCardResult {
-    const centerCard = this.cards.shift()
-    const cardsChunkLength = this.cards.length / players.length
-    const chunkedCardsArray = chunkArray(this.cards, cardsChunkLength)
+    const cards = getCards()
+    const centerCard = cards.shift()
+    const cardsChunkLength = cards.length / players.length
+    const chunkedCardsArray = chunkArray(cards, cardsChunkLength)
 
     const cardsByPlayer: CardsByPlayer = {}
     players.forEach((player, index) => {
