@@ -39,8 +39,8 @@ const playerControllers = {
   get_top_players: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const topPlayers = await Player.find()
-        .sort({ "winGames": 1 })
-        .limit(5)
+        .sort({ "level": -1 })
+        .limit(3)
         .exec()
 
       res.send(topPlayers)
