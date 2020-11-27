@@ -7,10 +7,12 @@ const router: Router = express.Router()
 
 const {
   get_player,
+  get_top_players,
   change_player,
 } = playerController
 
 router
+  .get(API_METHODS.TOP_PLAYERS, get_top_players)
   .get(API_METHODS.SINGLE_ITEM, get_player)
   .put(API_METHODS.SINGLE_ITEM, auth, change_player)
 

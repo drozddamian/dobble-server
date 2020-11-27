@@ -19,17 +19,31 @@ const getUpdateModelData = (newNick: string, newPassword: string) => {
 const playerControllers = {
   get_player: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const {id} = req.params
+      const { id } = req.params
 
       const player = await Player.findOne({_id: id}, (error) => {
         if (error) {
           return next(new ErrorHandler(400, 'User not found'))
         }
       })
-          .populate('owningRooms')
-          .populate('joinedRooms');
+      .populate('owningRooms')
+      .populate('joinedRooms');
 
       res.send({ player: mapPlayerData(player) })
+
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  get_top_players: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const topPlayers = await Player.find()
+        .sort({ "winGames": 1 })
+        .limit(5)
+        .exec()
+
+      res.send(topPlayers)
 
     } catch (error) {
       next(error)
