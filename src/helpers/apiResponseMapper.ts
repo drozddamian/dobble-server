@@ -33,17 +33,17 @@ export const mapPlayerData = (player: IPlayer): MappedPlayer => {
   }
 }
 
-interface MappedRoomsPagination {
-  rooms: IRoom[]
+interface MappedPaginationData<T> {
+  data: Array<T>
   chunkNumber: number;
   howManyChunks: number;
 }
 
-export const mapPaginationRooms = (rooms: IRoom[], chunkNumber: number, howManyRooms: number): MappedRoomsPagination => {
-  const howManyChunks = Math.ceil(howManyRooms / PAGINATION_CHUNK_SIZE)
+export function mapPaginationData<T>(data: T[], chunkNumber: number, howMany: number): MappedPaginationData<T> {
+  const howManyChunks = Math.ceil(howMany / PAGINATION_CHUNK_SIZE)
 
   return {
-    rooms,
+    data,
     chunkNumber,
     howManyChunks,
   }

@@ -5,9 +5,9 @@ import auth from '../../middleware/auth'
 
 const router: Router = express.Router()
 
-const { get_all_messages } = chatController
+const { get_messages } = chatController
 
 router
-  .get(API_METHODS.ROOT, get_all_messages)
+  .get(API_METHODS.ROOT, get_messages)
 
 export default router

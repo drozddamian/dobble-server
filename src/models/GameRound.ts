@@ -1,11 +1,12 @@
 import mongoose, { Types, Document } from 'mongoose'
-const Schema = mongoose.Schema
 import autopopulate from "mongoose-autopopulate"
 import { IPlayer } from './Player'
 import {
   Card,
   PackOfCards,
 } from '../types'
+
+const Schema = mongoose.Schema
 
 
 type RoundPlayerData = {
