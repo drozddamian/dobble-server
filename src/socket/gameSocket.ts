@@ -2,14 +2,15 @@ import SocketIO from 'socket.io'
 import dayjs from 'dayjs'
 import { Types } from 'mongoose'
 import { equals } from 'ramda'
-import GameTable, {GameTableStatus, IGameTable} from '../models/GameTable'
-import GameRound, {IGameRound} from '../models/GameRound'
+import GameTable, { GameTableStatus, IGameTable } from '../models/GameTable'
+import GameRound, { IGameRound } from '../models/GameRound'
 import Player, { IPlayer, WinGame } from '../models/Player'
-import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
-import {getCards} from '../helpers/cards'
 import { Card, CardsByPlayer } from '../types'
-import {mapGameRoundData} from '../helpers/socketResponseMapper'
-import {chunkArray, getExperienceByCardsLeft, updatePlayerExperience} from '../helpers'
+import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
+
+import { getCards } from '../helpers/cards'
+import { mapGameRoundData } from '../helpers/socketResponseMapper'
+import { chunkArray, getExperienceByCardsLeft, updatePlayerExperience } from '../helpers'
 
 
 const { Joining, Waiting, Countdown, Processing } = GameTableStatus

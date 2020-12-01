@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import { isNil } from 'ramda'
 import Room from '../../models/Room'
 import Player from '../../models/Player'
-import GameTable, {GameTableStatus} from '../../models/GameTable'
-import { mapPaginationRooms } from '../../helpers/apiResponseMapper'
+import GameTable, { GameTableStatus } from '../../models/GameTable'
+import { mapPaginationData } from '../../helpers/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
 import ErrorHandler from '../../helpers/error'
 
@@ -20,7 +20,7 @@ const roomControllers = {
         .skip(numberOfPagesToSkip)
 
       const howManyRooms = await Room.countDocuments()
-      const mappedRooms = mapPaginationRooms(rooms, Number(chunkNumber), howManyRooms)
+      const mappedRooms = mapPaginationData(rooms, Number(chunkNumber), howManyRooms)
       res.send(mappedRooms)
 
     } catch(error) {
