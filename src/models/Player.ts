@@ -2,6 +2,12 @@ import mongoose, { Document } from 'mongoose'
 const Schema = mongoose.Schema
 import { IRoom } from './Room'
 
+
+export type WinGame = {
+  timestamp: string;
+  durationOfGame: string;
+}
+
 export interface IPlayer extends Document {
   username: string;
   password: string;
@@ -9,7 +15,7 @@ export interface IPlayer extends Document {
   level: number;
   experience: number;
   experienceToNextLevel: number;
-  wonGames: number;
+  winGames: WinGame[];
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
 }
@@ -45,6 +51,10 @@ const PlayerSchema = new Schema({
     required: true,
     min: 0,
   },
+  winGames: [{
+    timestamp: String,
+    durationOfGame: String,
+  }],
   experienceToNextLevel: {
     type: Number,
     required: true,

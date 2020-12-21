@@ -1,14 +1,16 @@
 import SocketIO from 'socket.io'
-import {Schema, Types} from 'mongoose'
-import {equals} from 'ramda'
-import GameTable, {GameTableStatus, IGameTable} from '../models/GameTable'
-import GameRound, {IGameRound} from '../models/GameRound'
-import Player, {IPlayer} from '../models/Player'
+import dayjs from 'dayjs'
+import { Types } from 'mongoose'
+import { equals } from 'ramda'
+import GameTable, { GameTableStatus, IGameTable } from '../models/GameTable'
+import GameRound, { IGameRound } from '../models/GameRound'
+import Player, { IPlayer, WinGame } from '../models/Player'
+import { Card, CardsByPlayer } from '../types'
 import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
-import {getCards} from '../helpers/cards'
-import {Card, CardsByPlayer, PackOfCards} from '../types'
-import {mapGameRoundData} from '../helpers/socketResponseMapper'
-import {chunkArray, getExperienceByCardsLeft, updatePlayerExperience} from '../helpers'
+
+import { getCards } from '../helpers/cards'
+import { mapGameRoundData } from '../helpers/socketResponseMapper'
+import { chunkArray, getExperienceByCardsLeft, updatePlayerExperience } from '../helpers'
 
 
 const { Joining, Waiting, Countdown, Processing } = GameTableStatus
@@ -32,12 +34,26 @@ const ROUND_START_COUNTER = 3
 
 class GameSocket {
   io: SocketIO.Server;
-  cards: PackOfCards;
 
   constructor(app) {
     this.io = SocketIO().listen(80)
-    this.cards = getCards()
     this.initializeSocketConnection()
+  }
+
+  async getWinData(tableId: string): Promise<WinGame> {
+    try {
+      const gameFinishDate = dayjs()
+      const { _id } = await GameRound.findOne({ tableId: tableId })
+      const roundStartTimestamp = _id.getTimestamp()
+      const roundStartDate = dayjs(_id.getTimestamp())
+
+      return {
+        timestamp: roundStartTimestamp,
+        durationOfGame: gameFinishDate.diff(roundStartDate, 'second').toString()
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async addExperienceToPlayer(playerId: string, howManyCardsLeft: number): Promise<void> {
@@ -57,24 +73,33 @@ class GameSocket {
   }
 
   async dispatchGameEnd(tableId: string, playerId: string): Promise<void> {
-    const { nick } = await Player.findOne({ _id: playerId })
-    this.io.emit(GAME_END, { winner: nick })
+    try {
+      const winData = await this.getWinData(tableId)
+      const winner = await Player.findOne({ _id: playerId })
+      winner.winGames.push(winData)
+      winner.save()
 
-    setTimeout(async () => {
-      const updatedTable = await GameTable.findOneAndUpdate(
-        { _id: tableId },
-        { gameStatus: Waiting, roundStartCountdown: ROUND_START_COUNTER, roundId: null },
-        { 'new': true }
-      )
-      await GameRound.findOneAndDelete({ tableId })
-      this.dispatchTableChange(updatedTable)
-    }, 5000)
+      this.io.emit(GAME_END, { winner: winner.nick })
+
+      setTimeout(async () => {
+        const updatedTable = await GameTable.findOneAndUpdate(
+          {_id: tableId},
+          {gameStatus: Waiting, roundStartCountdown: ROUND_START_COUNTER, roundId: null},
+          {'new': true}
+        )
+        await GameRound.findOneAndDelete({tableId})
+        this.dispatchTableChange(updatedTable)
+      }, 5000)
+    } catch (error) {
+      this.io.emit(GAME_ERROR, 'ERROR WITH FINISHING THE GAME')
+    }
   }
 
   getFirstDealCards(players: IPlayer[]): FirstCardResult {
-    const centerCard = this.cards.shift()
-    const cardsChunkLength = this.cards.length / players.length
-    const chunkedCardsArray = chunkArray(this.cards, cardsChunkLength)
+    const cards = getCards()
+    const centerCard = cards.shift()
+    const cardsChunkLength = cards.length / players.length
+    const chunkedCardsArray = chunkArray(cards, cardsChunkLength)
 
     const cardsByPlayer: CardsByPlayer = {}
     players.forEach((player, index) => {
@@ -138,7 +163,6 @@ class GameSocket {
 
       this.dispatchTableChange(updatedGameTable)
     } catch (error) {
-      console.log("join player error", error)
       this.io.emit(GAME_ERROR, 'ERROR WHILE JOINING THE TABLE')
     }
   }
@@ -225,7 +249,6 @@ class GameSocket {
       )
       this.dispatchTableChange(updatedTable)
     } catch (error) {
-      console.log("player leave error", error)
       this.io.emit(GAME_ERROR, 'PLAYER LEAVE ERROR')
     }
   }

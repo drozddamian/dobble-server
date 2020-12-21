@@ -1,11 +1,12 @@
 import mongoose, { Types, Document } from 'mongoose'
-const Schema = mongoose.Schema
 import autopopulate from "mongoose-autopopulate"
 import { IPlayer } from './Player'
 import {
   Card,
   PackOfCards,
 } from '../types'
+
+const Schema = mongoose.Schema
 
 
 type RoundPlayerData = {
@@ -18,7 +19,6 @@ export type CardsByPlayerCollection = {
 }
 
 export interface IGameRound extends Document {
-  _id: string;
   isGameRoundInProcess: boolean;
   centerCard: Card | null;
   spotterId: string;

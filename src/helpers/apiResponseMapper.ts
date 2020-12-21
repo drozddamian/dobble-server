@@ -1,4 +1,4 @@
-import { IPlayer } from '../models/Player'
+import { IPlayer, WinGame } from '../models/Player'
 import { IRoom } from '../models/Room'
 import { PAGINATION_CHUNK_SIZE } from '../constants'
 
@@ -12,10 +12,11 @@ interface MappedPlayer {
   percentToNextLevel: number;
   owningRooms?: IRoom[];
   joinedRooms?: IRoom[];
+  winGames: WinGame[];
 }
 
 export const mapPlayerData = (player: IPlayer): MappedPlayer => {
-  const { _id, username, nick, level, experience, experienceToNextLevel, owningRooms, joinedRooms} = player
+  const { _id, username, nick, level, experience, experienceToNextLevel, owningRooms, winGames, joinedRooms} = player
 
   const percentToNextLevel = Math.floor((experience * 100) / experienceToNextLevel)
   return {
@@ -27,21 +28,22 @@ export const mapPlayerData = (player: IPlayer): MappedPlayer => {
     experienceToNextLevel,
     percentToNextLevel,
     owningRooms,
-    joinedRooms
+    joinedRooms,
+    winGames,
   }
 }
 
-interface MappedRoomsPagination {
-  rooms: IRoom[]
+interface MappedPaginationData<T> {
+  data: Array<T>
   chunkNumber: number;
   howManyChunks: number;
 }
 
-export const mapPaginationRooms = (rooms: IRoom[], chunkNumber: number, howManyRooms: number): MappedRoomsPagination => {
-  const howManyChunks = Math.ceil(howManyRooms / PAGINATION_CHUNK_SIZE)
+export function mapPaginationData<T>(data: T[], chunkNumber: number, howMany: number): MappedPaginationData<T> {
+  const howManyChunks = Math.ceil(howMany / PAGINATION_CHUNK_SIZE)
 
   return {
-    rooms,
+    data,
     chunkNumber,
     howManyChunks,
   }
