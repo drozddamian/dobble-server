@@ -24,6 +24,7 @@
     "mongoose-autopopulate": "^0.12.3",
     "ramda": "^0.27.1",
     "socket.io": "^2.3.0",
+    "ts-node": "^9.1.1",
     "ts-node-dev": "^1.0.0-pre.57",
     "typescript": "^3.9.7"
   },
@@ -37,10 +38,10 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "build": "tsc -p ./",
-    "start": "node build/index.js",
-    "run": "nodemon -x tsnd src/index.ts",
-    "prod": "tsc && node ./build/index.js"
+    "build": "tsc --project ./",
+    "start": "ts-node ./src/index.ts",
+    "prod": "node ./build/index.js",
+    "serve": "node dist/server.js"
   },
   "engines": {
     "node": "14.x"
