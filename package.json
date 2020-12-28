@@ -33,15 +33,19 @@
     "@types/mongoose": "^5.7.36",
     "@types/socket.io": "^2.1.11",
     "@typescript-eslint/eslint-plugin": "^3.9.0",
-    "@typescript-eslint/parser": "^3.9.0",
+    "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.7.0",
-    "nodemon": "^2.0.4"
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.2.1"
   },
   "scripts": {
     "build": "tsc --project ./",
     "start": "ts-node ./src/index.ts",
     "prod": "node ./build/index.js",
-    "serve": "node dist/server.js"
+    "serve": "node dist/server.js",
+    "lint": "eslint . --ignore-path .gitignore --ext .ts,.tsx,.js"
   },
   "engines": {
     "node": "14.x"

@@ -6,27 +6,17 @@ import validationSchema from '../../validation'
 
 const router: Router = express.Router()
 
-const {
-  login,
-  register,
-  logout,
-} = authController
+const { login, register, logout } = authController
 
-router.post(
-  API_METHODS.LOGIN,
-  validationSchema.login,
-  validate,
-  login,
-)
+router.post(API_METHODS.LOGIN, validationSchema.login, validate, login)
 
 router.post(
   API_METHODS.REGISTER,
   validationSchema.register,
   validate,
-  register,
+  register
 )
 
 router.post(API_METHODS.LOGOUT, logout)
-
 
 export default router

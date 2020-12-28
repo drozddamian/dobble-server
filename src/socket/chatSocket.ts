@@ -3,13 +3,10 @@ import CHAT_SOCKET_ACTIONS from '../constants/chatSocket'
 import Player from '../models/Player'
 import ChatMessage from '../models/Chat'
 
-const {
-  NEW_MESSAGE,
-  CHAT_ERROR,
-} = CHAT_SOCKET_ACTIONS
+const { NEW_MESSAGE, CHAT_ERROR } = CHAT_SOCKET_ACTIONS
 
 class GameSocket {
-  io: SocketIO.Server;
+  io: SocketIO.Server
 
   constructor(app) {
     this.io = SocketIO().listen(90)
@@ -18,11 +15,14 @@ class GameSocket {
 
   async addMessage(sender: string, content: string): Promise<void> {
     try {
-      const senderProfile = await Player.findOne({ _id: sender }, (error) => {
-        if (error) {
-          return this.io.emit(CHAT_ERROR, 'Something went wrong...')
+      const senderProfile = await Player.findOne(
+        { _id: sender },
+        (error) => {
+          if (error) {
+            return this.io.emit(CHAT_ERROR, 'Something went wrong...')
+          }
         }
-      })
+      )
 
       const chatMessage = new ChatMessage({
         content,
@@ -39,7 +39,11 @@ class GameSocket {
 
   initializeSocketConnection(): void {
     this.io.on('connection', async (socket) => {
-      socket.on(NEW_MESSAGE, async ({ sender, content }) => await this.addMessage(sender, content))
+      socket.on(
+        NEW_MESSAGE,
+        async ({ sender, content }) =>
+          await this.addMessage(sender, content)
+      )
     })
   }
 }

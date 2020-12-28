@@ -1,26 +1,29 @@
 import mongoose, { Document } from 'mongoose'
-import autopopulate from "mongoose-autopopulate"
+import autopopulate from 'mongoose-autopopulate'
 import { IPlayer } from './Player'
 
 const Schema = mongoose.Schema
 
 export interface IChat extends Document {
-  sender: IPlayer;
-  content: string;
+  sender: IPlayer
+  content: string
 }
 
-const MessageSchema = new Schema({
-  sender: {
-    type: Schema.Types.ObjectId,
-    ref: 'Player',
-    required: true,
-    autopopulate: true,
+const MessageSchema = new Schema(
+  {
+    sender: {
+      type: Schema.Types.ObjectId,
+      ref: 'Player',
+      required: true,
+      autopopulate: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
   },
-  content: {
-    type: String,
-    required: true
-  },
-}, { timestamps: true })
+  { timestamps: true }
+)
 
 MessageSchema.plugin(autopopulate)
 

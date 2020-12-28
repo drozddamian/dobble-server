@@ -7,28 +7,38 @@ import { mapPaginationData } from '../../helpers/apiResponseMapper'
 import { PAGINATION_CHUNK_SIZE } from '../../constants'
 import ErrorHandler from '../../helpers/error'
 
-
-
 const roomControllers = {
-  get_rooms: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  get_rooms: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { chunkNumber = 1 } = req.query
-      const numberOfPagesToSkip = (Number(chunkNumber) - 1) * PAGINATION_CHUNK_SIZE
+      const numberOfPagesToSkip =
+        (Number(chunkNumber) - 1) * PAGINATION_CHUNK_SIZE
 
       const rooms = await Room.find()
         .limit(PAGINATION_CHUNK_SIZE)
         .skip(numberOfPagesToSkip)
 
       const howManyRooms = await Room.countDocuments()
-      const mappedRooms = mapPaginationData(rooms, Number(chunkNumber), howManyRooms)
+      const mappedRooms = mapPaginationData(
+        rooms,
+        Number(chunkNumber),
+        howManyRooms
+      )
       res.send(mappedRooms)
-
-    } catch(error) {
+    } catch (error) {
       next(error)
     }
   },
 
-  get_top_five_rooms: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  get_top_five_rooms: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const topRooms = await Room.find({})
         .sort({ howManyPlayers: -1 })
@@ -37,13 +47,16 @@ const roomControllers = {
         .exec()
 
       res.send(topRooms)
-
     } catch (error) {
       next(error)
     }
   },
 
-  get_single_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  get_single_room: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params
       const room = await Room.findOne({ _id: id }, (error) => {
@@ -51,59 +64,67 @@ const roomControllers = {
           return next(new ErrorHandler(400, 'Room not found'))
         }
       })
-      .populate('owner')
-      .populate('players')
+        .populate('owner')
+        .populate('players')
 
       res.send(room)
-
     } catch (error) {
       next(error)
     }
   },
 
-  create_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  create_room: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { name: roomName, availableSeats, ownerId } = req.body
 
       const sameNameRoom = await Room.findOne({ name: roomName })
       if (!isNil(sameNameRoom)) {
-        return next(new ErrorHandler(400, 'Room with that name already exists'))
+        return next(
+          new ErrorHandler(400, 'Room with that name already exists')
+        )
       }
 
-    const player = await Player.findOne({ _id: ownerId })
-    if (isNil(player)) {
-      return next(new ErrorHandler(400, 'User not found'))
-    }
+      const player = await Player.findOne({ _id: ownerId })
+      if (isNil(player)) {
+        return next(new ErrorHandler(400, 'User not found'))
+      }
 
-    const room = new Room({
-      name: roomName,
-      availableSeats,
-      owner: ownerId,
-      players: [ownerId],
-      howManyPlayers: 1,
-      gameTable: null,
-    })
+      const room = new Room({
+        name: roomName,
+        availableSeats,
+        owner: ownerId,
+        players: [ownerId],
+        howManyPlayers: 1,
+        gameTable: null,
+      })
 
-    const newGameTable = new GameTable({
-      room: { ...room },
-      GameTableStatus: GameTableStatus.Joining,
-    })
+      const newGameTable = new GameTable({
+        room: { ...room },
+        GameTableStatus: GameTableStatus.Joining,
+      })
 
-    room.gameTable = newGameTable
-    player.owningRooms.push(room)
-    player.joinedRooms.push(room)
+      room.gameTable = newGameTable
+      player.owningRooms.push(room)
+      player.joinedRooms.push(room)
 
-    await newGameTable.save()
-    await room.save()
-    await player.save()
-    res.send(room)
-
+      await newGameTable.save()
+      await room.save()
+      await player.save()
+      res.send(room)
     } catch (error) {
       next(error)
     }
   },
 
-  remove_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  remove_room: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params
       await Room.findByIdAndDelete(id, (error, removedRoom) => {
@@ -117,7 +138,11 @@ const roomControllers = {
     }
   },
 
-  join_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  join_room: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { roomId, playerId } = req.body
 
@@ -130,11 +155,13 @@ const roomControllers = {
       const { howManyPlayers, availableSeats, players } = roomToJoin
 
       if (howManyPlayers === availableSeats) {
-        return next(new ErrorHandler(409, "No seats available"))
+        return next(new ErrorHandler(409, 'No seats available'))
       }
 
       if (players.includes(playerId)) {
-        return next(new ErrorHandler(409, "You've already joined the room"))
+        return next(
+          new ErrorHandler(409, "You've already joined the room")
+        )
       }
 
       const joinPlayer = await Player.findOneAndUpdate(
@@ -153,7 +180,11 @@ const roomControllers = {
     }
   },
 
-  leave_room: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  leave_room: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { roomId, playerId } = req.body
 
@@ -179,7 +210,6 @@ const roomControllers = {
       )
 
       res.send(leftPlayer)
-
     } catch (error) {
       next(error)
     }

@@ -5,10 +5,7 @@ import auth from '../../middleware/auth'
 
 const router: Router = express.Router()
 
-const {
-  get_game_table,
-  join_game_table,
-} = gameTableController
+const { get_game_table, join_game_table } = gameTableController
 
 const gameTableRouter = (socketIo) => {
   return router

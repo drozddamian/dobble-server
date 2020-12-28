@@ -1,12 +1,17 @@
 import Player from '../models/Player'
 
 type UpdateModel = {
-  level: number;
-  experience: number;
-  experienceToNextLevel: number;
+  level: number
+  experience: number
+  experienceToNextLevel: number
 }
 
-const getUpdateModel = (level, experience, experienceToAdd, experienceToNextLevel): UpdateModel => {
+const getUpdateModel = (
+  level,
+  experience,
+  experienceToAdd,
+  experienceToNextLevel
+): UpdateModel => {
   const newExperience = experience + experienceToAdd
   const isAdvancingToNextLevel = newExperience >= experienceToNextLevel
 
@@ -20,16 +25,23 @@ const getUpdateModel = (level, experience, experienceToAdd, experienceToNextLeve
   return {
     level,
     experience: newExperience,
-    experienceToNextLevel
+    experienceToNextLevel,
   }
 }
 
-
-export const updatePlayerExperience = async (playerId: string, experienceToAdd: number) => {
+export const updatePlayerExperience = async (
+  playerId: string,
+  experienceToAdd: number
+) => {
   const player = await Player.findOne({ _id: playerId })
   const { level, experience, experienceToNextLevel } = player
 
-  const updateModel = getUpdateModel(level, experience, experienceToAdd, experienceToNextLevel)
+  const updateModel = getUpdateModel(
+    level,
+    experience,
+    experienceToAdd,
+    experienceToNextLevel
+  )
 
   player.level = updateModel.level
   player.experience = updateModel.experience

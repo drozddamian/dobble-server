@@ -6,14 +6,14 @@ import bcrypt from 'bcrypt'
 import Player from '../../models/Player'
 import ErrorHandler from '../../helpers/error'
 import { mapPlayerData } from '../../helpers/apiResponseMapper'
-import {
-  AUTH_TOKEN,
-  EXPERIENCE_TO_SECOND_LEVEL,
-} from '../../constants'
-
+import { AUTH_TOKEN, EXPERIENCE_TO_SECOND_LEVEL } from '../../constants'
 
 const authControllers = {
-  login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  login: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { username, password } = req.body
 
@@ -23,32 +23,41 @@ const authControllers = {
         return next(new ErrorHandler(400, 'User not found'))
       }
 
-      const isValidPassword = await bcrypt.compare(password, player.password)
+      const isValidPassword = await bcrypt.compare(
+        password,
+        player.password
+      )
       if (!isValidPassword) {
         return next(new ErrorHandler(400, 'Invalid password'))
       }
 
       const mappedPlayerData = mapPlayerData(player)
 
-      const token = jwt.sign({ _id: player._id }, process.env.JWT_SECRET as Secret)
+      const token = jwt.sign(
+        { _id: player._id },
+        process.env.JWT_SECRET as Secret
+      )
 
       res.send({
         player: mappedPlayerData,
         token,
       })
-
     } catch (error) {
       return next(error)
     }
   },
 
-  register: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  register: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { username, nick, password } = req.body
 
       await Player.findOne({ username }, (_, player) => {
         if (player) {
-         return next(new ErrorHandler(409, 'Username already exists'))
+          return next(new ErrorHandler(409, 'Username already exists'))
         }
       })
 
@@ -65,20 +74,26 @@ const authControllers = {
       })
 
       const savedPlayer = await player.save()
-      const token = jwt.sign({ _id: savedPlayer._id }, process.env.JWT_SECRET as Secret)
+      const token = jwt.sign(
+        { _id: savedPlayer._id },
+        process.env.JWT_SECRET as Secret
+      )
       const mappedPlayerData = mapPlayerData(savedPlayer)
 
       res.send({
         player: mappedPlayerData,
         token,
       })
-
     } catch (error) {
       next(error)
     }
   },
 
-  logout: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  logout: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       await res.removeHeader(AUTH_TOKEN)
       res.send('Logged out successful')

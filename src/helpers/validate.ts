@@ -2,7 +2,6 @@ import { head } from 'ramda'
 import { validationResult } from 'express-validator'
 import ErrorHandler from './error'
 
-
 const validate = (req, res, next) => {
   const errors = validationResult(req)
 

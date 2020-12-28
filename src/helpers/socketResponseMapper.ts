@@ -5,37 +5,53 @@ import { Card } from '../types'
 import { getExperienceByCardsLeft } from './index'
 import { IPlayer } from '../models/Player'
 
-
-function getExperienceForSpotter(cardsByPlayer: CardsByPlayerCollection, spotterId: string | null): number {
-  if (isNil(spotterId)) { return 0 }
+function getExperienceForSpotter(
+  cardsByPlayer: CardsByPlayerCollection,
+  spotterId: string | null
+): number {
+  if (isNil(spotterId)) {
+    return 0
+  }
 
   const { numberOfCardsLeft } = cardsByPlayer[spotterId]
   return getExperienceByCardsLeft(numberOfCardsLeft)
 }
 
-
 type CardsByPlayerId = {
   [id: string]: {
-    card: Card;
-    howManyCardsLeft: number;
-  };
+    card: Card
+    howManyCardsLeft: number
+  }
 }
 
 interface MappedGameRound {
-  id: string;
-  tableId: Types.ObjectId;
-  isGameRoundInProcess: boolean;
-  spotterId: string;
-  centerCard: Card;
-  experienceForSpotter: number;
-  cardsByPlayerId: CardsByPlayerId;
-  players: IPlayer[];
+  id: string
+  tableId: Types.ObjectId
+  isGameRoundInProcess: boolean
+  spotterId: string
+  centerCard: Card
+  experienceForSpotter: number
+  cardsByPlayerId: CardsByPlayerId
+  players: IPlayer[]
 }
 
-export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
-  const { _id, isGameRoundInProcess, centerCard, players, cardsByPlayer, spotterId, tableId } = newGameRound
+export const mapGameRoundData = (
+  newGameRound: IGameRound
+): MappedGameRound => {
+  const {
+    _id,
+    isGameRoundInProcess,
+    centerCard,
+    players,
+    cardsByPlayer,
+    spotterId,
+    tableId,
+  } = newGameRound
 
-  const experienceForSpotter = getExperienceForSpotter(cardsByPlayer, spotterId)
+  const experienceForSpotter = getExperienceForSpotter(
+    cardsByPlayer,
+    spotterId
+  )
 
   const playersInRound = Object.keys(cardsByPlayer)
   const cardsByPlayerId: CardsByPlayerId = {}
@@ -47,7 +63,6 @@ export const mapGameRoundData = (newGameRound: IGameRound): MappedGameRound => {
       howManyCardsLeft: cards.length,
     }
   })
-
 
   return {
     id: _id,

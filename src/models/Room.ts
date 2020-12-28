@@ -5,15 +5,14 @@ import { IPlayer } from './Player'
 import { IGameTable } from './GameTable'
 import { roomRemove } from './modelsMiddleware/roomChange'
 
-
 export interface IRoom extends Document {
-  name: string;
-  availableSeats: 2 | 3 | 4 | 5 | 6;
-  owner: IPlayer[];
-  players?: IPlayer[];
-  gameTable: IGameTable;
-  howManyPlayers: number;
-  createdAt: Date;
+  name: string
+  availableSeats: 2 | 3 | 4 | 5 | 6
+  owner: IPlayer[]
+  players?: IPlayer[]
+  gameTable: IGameTable
+  howManyPlayers: number
+  createdAt: Date
 }
 
 const ROOM_EXPIRATION_DATE = 3600 * 24 * 7
@@ -40,10 +39,12 @@ const RoomSchema = new Schema({
     ref: 'Player',
     required: true,
   },
-  players: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Player',
-  }],
+  players: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Player',
+    },
+  ],
   howManyPlayers: {
     type: Number,
     min: 0,
@@ -56,7 +57,6 @@ const RoomSchema = new Schema({
     //expires: 3600,
   },
 })
-
 
 RoomSchema.post('findOneAndDelete', roomRemove)
 

@@ -3,7 +3,7 @@ import Player from '../Player'
 import GameTable from '../GameTable'
 import { IRoom } from '../Room'
 
-const roomRemove = async (removedRoom: IRoom) => {
+const roomRemove = async (removedRoom: IRoom): Promise<void> => {
   const removedRoomId = removedRoom?._id
   const removedRoomTableId = removedRoom?.gameTable
   if (isNil(removedRoomId)) {
@@ -14,10 +14,12 @@ const roomRemove = async (removedRoom: IRoom) => {
     await GameTable.deleteOne({ _id: removedRoomTableId })
     await Player.updateMany(
       {},
-        { $pull: {
+      {
+        $pull: {
           joinedRooms: removedRoomId,
-          owningRooms: removedRoomId
-        }},
+          owningRooms: removedRoomId,
+        },
+      },
       { multi: true }
     )
   } catch (error) {
@@ -25,7 +27,4 @@ const roomRemove = async (removedRoom: IRoom) => {
   }
 }
 
-
-export {
-  roomRemove,
-}
+export { roomRemove }

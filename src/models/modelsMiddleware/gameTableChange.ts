@@ -1,14 +1,22 @@
 import { isNil, equals } from 'ramda'
 import { GameTableStatus, IGameTable } from '../GameTable'
 
-const tableStatusUpdate = async (updatedTable: IGameTable): Promise<void> => {
-  if (isNil(updatedTable)) { return }
+const tableStatusUpdate = async (
+  updatedTable: IGameTable
+): Promise<void> => {
+  if (isNil(updatedTable)) {
+    return
+  }
 
   const { gameStatus, players } = updatedTable
   const howManyPlayers = players.length
   let updateGameStatus = gameStatus
 
-  if (![GameTableStatus.Joining, GameTableStatus.Waiting].includes(gameStatus)) {
+  if (
+    ![GameTableStatus.Joining, GameTableStatus.Waiting].includes(
+      gameStatus
+    )
+  ) {
     return
   }
 
@@ -22,7 +30,4 @@ const tableStatusUpdate = async (updatedTable: IGameTable): Promise<void> => {
   await updatedTable.save()
 }
 
-
-export {
-  tableStatusUpdate,
-}
+export { tableStatusUpdate }

@@ -22,7 +22,7 @@ router
     API_METHODS.ROOT,
     validationSchema.createRoom,
     validate,
-    create_room,
+    create_room
   )
   .get(API_METHODS.MOST_POPULAR_ROOMS, get_top_five_rooms)
   .get(API_METHODS.ROOT, get_rooms)
@@ -30,6 +30,5 @@ router
   .post(API_METHODS.JOIN_ROOM, auth, join_room)
   .post(API_METHODS.LEAVE_ROOM, auth, leave_room)
   .delete(API_METHODS.SINGLE_ITEM, auth, remove_room)
-
 
 export default router

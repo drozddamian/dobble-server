@@ -5,11 +5,7 @@ import auth from '../../middleware/auth'
 
 const router: Router = express.Router()
 
-const {
-  get_player,
-  get_top_players,
-  change_player,
-} = playerController
+const { get_player, get_top_players, change_player } = playerController
 
 router
   .get(API_METHODS.TOP_PLAYERS, get_top_players)
