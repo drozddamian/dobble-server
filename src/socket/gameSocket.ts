@@ -41,8 +41,8 @@ const ROUND_START_COUNTER = 3
 class GameSocket {
   io: SocketIO.Server
 
-  constructor() {
-    this.io = SocketIO().listen(80)
+  constructor(server) {
+    this.io = SocketIO(server)
     this.initializeSocketConnection()
   }
 

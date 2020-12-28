@@ -8,8 +8,8 @@ const { NEW_MESSAGE, CHAT_ERROR } = CHAT_SOCKET_ACTIONS
 class GameSocket {
   io: SocketIO.Server
 
-  constructor(app) {
-    this.io = SocketIO().listen(90)
+  constructor(server) {
+    this.io = SocketIO(server)
     this.initializeSocketConnection()
   }
 

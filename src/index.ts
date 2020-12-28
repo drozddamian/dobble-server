@@ -39,6 +39,6 @@ const server = app.listen(PORT, () =>
 )
 
 new ChatSocket(server)
-const gameSocket = new GameSocket()
+const gameSocket = new GameSocket(server)
 app.use(API.GAME_TABLE, gameTable(gameSocket))
 app.use(errorMiddleware)
