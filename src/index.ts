@@ -5,8 +5,7 @@ import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import AppConfig from './config'
 import errorMiddleware from './middleware/error'
-import GameSocket from './socket/gameSocket'
-import ChatSocket from './socket/chatSocket'
+import Socket from './socket'
 import chat from './routes/chat'
 import auth from './routes/auth'
 import player from './routes/player'
@@ -38,7 +37,6 @@ const server = app.listen(PORT, () =>
   console.log(`Server listening on port ${process.env.PORT}!`)
 )
 
-new ChatSocket(server)
-const gameSocket = new GameSocket(server)
-app.use(API.GAME_TABLE, gameTable(gameSocket))
+const webSocket = new Socket(server)
+app.use(API.GAME_TABLE, gameTable(webSocket))
 app.use(errorMiddleware)
