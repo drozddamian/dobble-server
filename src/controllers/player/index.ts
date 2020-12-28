@@ -66,12 +66,8 @@ const playerControllers = {
         return next(new ErrorHandler(400, 'Nothing to update'))
       }
 
-      Player.findByIdAndUpdate(id, updateModelObject, (error) => {
-        if (error) {
-          return next(new ErrorHandler(400, 'Update failed'))
-        }
-        res.send('Data had been updated')
-      })
+      const updatedPlayer = Player.findOneAndUpdate({ _id: id })
+      res.send(updatedPlayer)
     } catch (error) {
       next(error)
     }

@@ -127,12 +127,9 @@ const roomControllers = {
   ): Promise<void> => {
     try {
       const { id } = req.params
-      await Room.findOneAndDelete({ _id: id }, (error, removedRoom) => {
-        if (error) {
-          return next(new ErrorHandler(400, 'Room not found'))
-        }
-        res.send(removedRoom)
-      })
+      const removedRoom = await Room.findOneAndDelete({ _id: id })
+
+      res.send(removedRoom)
     } catch (error) {
       next(error)
     }
