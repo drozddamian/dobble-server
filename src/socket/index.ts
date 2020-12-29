@@ -2,6 +2,7 @@ import SocketIO from 'socket.io'
 import dayjs from 'dayjs'
 import { Types } from 'mongoose'
 import { equals } from 'ramda'
+import ChatMessage from '../models/Chat'
 import GameTable, {
   GameTableStatus,
   IGameTable,
@@ -9,8 +10,6 @@ import GameTable, {
 import GameRound, { IGameRound } from '../models/GameRound'
 import Player, { IPlayer, WinGame } from '../models/Player'
 import { Card, CardsByPlayer } from '../types'
-import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
-
 import { getCards } from '../helpers/cards'
 import { mapGameRoundData } from '../helpers/socketResponseMapper'
 import {
@@ -18,8 +17,10 @@ import {
   getExperienceByCardsLeft,
   updatePlayerExperience,
 } from '../helpers'
+import GAME_SOCKET_ACTIONS from '../constants/gameSocket'
+import CHAT_SOCKET_ACTIONS from '../constants/chatSocket'
 
-const { Joining, Waiting, Countdown, Processing } = GameTableStatus
+const { NEW_MESSAGE, CHAT_ERROR } = CHAT_SOCKET_ACTIONS
 
 const {
   PLAYER_LEAVE,
@@ -36,13 +37,15 @@ type FirstCardResult = {
   cardsByPlayer: CardsByPlayer
 }
 
+const { Joining, Waiting, Countdown, Processing } = GameTableStatus
+
 const ROUND_START_COUNTER = 3
 
-class GameSocket {
+class WebSocket {
   io: SocketIO.Server
 
-  constructor() {
-    this.io = SocketIO().listen(80)
+  constructor(server) {
+    this.io = SocketIO(server)
     this.initializeSocketConnection()
   }
 
@@ -287,8 +290,38 @@ class GameSocket {
     }
   }
 
+  async addMessage(sender: string, content: string): Promise<void> {
+    try {
+      const senderProfile = await Player.findOne(
+        { _id: sender },
+        (error) => {
+          if (error) {
+            return this.io.emit(CHAT_ERROR, 'Something went wrong...')
+          }
+        }
+      )
+
+      const chatMessage = new ChatMessage({
+        content,
+        sender: senderProfile,
+      })
+
+      await chatMessage.save()
+
+      this.io.emit(NEW_MESSAGE, chatMessage)
+    } catch (error) {
+      this.io.emit(CHAT_ERROR, 'Something went wrong...')
+    }
+  }
+
   initializeSocketConnection(): void {
     this.io.on('connection', async (socket) => {
+      socket.on(
+        NEW_MESSAGE,
+        async ({ sender, content }) =>
+          await this.addMessage(sender, content)
+      )
+
       socket.on('join', async (connectionData) => {
         const { gameTableId, playerId } = connectionData
         await socket.join(gameTableId)
@@ -318,4 +351,4 @@ class GameSocket {
   }
 }
 
-export default GameSocket
+export default WebSocket
