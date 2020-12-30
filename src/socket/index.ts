@@ -122,7 +122,7 @@ class WebSocket {
   getFirstDealCards(players: IPlayer[]): FirstCardResult {
     const cards = getCards()
     const centerCard = cards.shift()
-    const cardsChunkLength = cards.length / players.length
+    const cardsChunkLength = Math.floor(cards.length / players.length)
     const chunkedCardsArray = chunkArray(cards, cardsChunkLength)
 
     const cardsByPlayer: CardsByPlayer = {}
