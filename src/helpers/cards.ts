@@ -6,11 +6,14 @@ const shuffleCards = (cards: PackOfCards): PackOfCards => {
 
   while (shuffleCounter < 3) {
     for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * cards.length - 1)
-      const temp = cards[i]
+      const j = Math.floor(Math.random() * cards.length)
 
-      cards[i] = cards[j]
-      cards[j] = temp
+      if (j !== i) {
+        const temp = cards[i]
+
+        cards[i] = [...cards[j]]
+        cards[j] = [...temp]
+      }
     }
     shuffleCounter++
   }

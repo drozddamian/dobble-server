@@ -28,6 +28,7 @@ const PlayerSchema = new Schema({
     maxlength: 18,
   },
   password: {
+    select: false,
     type: String,
     required: true,
     minLength: 6,

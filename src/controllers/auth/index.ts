@@ -17,7 +17,9 @@ const authControllers = {
     try {
       const { username, password } = req.body
 
-      const player = await Player.findOne({ username: username })
+      const player = await Player.findOne({ username: username }).select(
+        '+password'
+      )
 
       if (isNil(player)) {
         return next(new ErrorHandler(400, 'User not found'))
