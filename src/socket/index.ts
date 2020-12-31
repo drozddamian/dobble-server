@@ -282,6 +282,11 @@ class WebSocket {
         table.players.findIndex(({ _id }) => _id.toString() === playerId),
         1
       )
+
+      if (table.players.length < 2 && table.gameStatus !== Processing) {
+        table.gameStatus = Joining
+      }
+
       table.save()
       this.dispatchTableChange(table)
     } catch (error) {
