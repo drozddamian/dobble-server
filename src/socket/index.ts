@@ -277,14 +277,13 @@ class WebSocket {
 
   async playerLeave(playerId: string, tableId: string): Promise<void> {
     try {
-      const player = await Player.findOne({ _id: playerId })
-
-      const updatedTable = await GameTable.findOneAndUpdate(
-        { _id: tableId },
-        { $pull: { players: player } },
-        { new: true }
+      const table = await GameTable.findOne({ _id: tableId })
+      table.players.splice(
+        table.players.findIndex(({ _id }) => _id.toString() === playerId),
+        1
       )
-      this.dispatchTableChange(updatedTable)
+      table.save()
+      this.dispatchTableChange(table)
     } catch (error) {
       this.io.emit(GAME_ERROR, 'PLAYER LEAVE ERROR')
     }

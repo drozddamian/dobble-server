@@ -42,6 +42,7 @@
   "scripts": {
     "build": "tsc --project ./",
     "start": "ts-node ./src/index.ts",
+    "dev": "nodemon ./src/index.ts",
     "prod": "node ./build/index.js",
     "serve": "node dist/server.js",
     "lint": "eslint . --ignore-path .gitignore --ext .ts,.tsx,.js"
