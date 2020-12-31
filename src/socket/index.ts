@@ -257,8 +257,7 @@ class WebSocket {
 
       const newCenterCard = cardsByPlayer[playerId].cards.pop()
       const playerCards = cardsByPlayer[playerId].cards
-      const howManyCardsLeft = playerCards.length - 1
-      cardsByPlayer[playerId].numberOfCardsLeft = howManyCardsLeft
+      cardsByPlayer[playerId].numberOfCardsLeft = playerCards.length
 
       const gameRound: IGameRound = await GameRound.findOneAndUpdate(
         { tableId: Types.ObjectId(tableId) },
@@ -268,7 +267,7 @@ class WebSocket {
 
       await this.dispatchGameChange(gameRound)
       await this.addExperienceToPlayer(playerId, playerCards.length)
-      howManyCardsLeft === 0 &&
+      playerCards.length === 0 &&
         (await this.dispatchGameEnd(tableId, playerId))
     } catch (error) {
       this.io.emit(GAME_ERROR, error.message)
